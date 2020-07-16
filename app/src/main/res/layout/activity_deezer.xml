@@ -11,7 +11,7 @@ android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_toLeftOf="@id/searchButton"
-    android:layout_alignParenttop="true"
+    android:layout_alignParentTop="true"
     android:hint="@string/searchhere" />
 
 <Button
@@ -22,8 +22,19 @@ android:orientation="vertical"
     android:layout_height="wrap_content"
     android:text="@string/searchButton" />
 
+<TextView
+    android:id="@+id/artistName"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/searchField"
+    android:text="Song List for Paramore"
+    android:textSize="20sp"
+    android:textAlignment="center"
+    android:visibility="invisible"
+    />
+
 <ListView
-    android:id="@+id/chatWindow"
+    android:id="@+id/songListWindow"
     android:layout_below="@id/deezerProgressBar"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
@@ -32,6 +43,7 @@ android:orientation="vertical"
     android:id="@+id/deezerProgressBar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_below="@id/searchField"/>
+    android:layout_below="@id/searchField"
+    android:visibility="invisible" />
 
 </RelativeLayout>
