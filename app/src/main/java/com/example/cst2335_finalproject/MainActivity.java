@@ -14,11 +14,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button deezerButton = findViewById(R.id.deezerButton);
+        Button soccerButton = findViewById(R.id.soccerButton);
 
+        //takes user to deezer song search page
         deezerButton.setOnClickListener(btn -> {
             Intent goToDeezer = new Intent(MainActivity.this, DeezerActivity.class);
             startActivity(goToDeezer);
         });
+
+        //takes user to soccer highlights page
+        soccerButton.setOnClickListener(btn -> {
+            Intent goToSoccer = new Intent(MainActivity.this, SoccerActivity.class);
+            startActivity(goToSoccer);
+        });
+
+
 
     }
 }
