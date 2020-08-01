@@ -52,7 +52,7 @@ public class SoccerActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.soccerProgressBar);
 
         MatchQuery query = new MatchQuery();
-        query.execute("https://www.scorebat.com/video-api/v1/#");
+        query.execute("https://www.scorebat.com/video-api/v1/");
 
         ListView listOfGameTitles = (ListView) findViewById(R.id.gameTitlesList);
         listOfGameTitles.setAdapter(matchAdapter = new MatchListAdapter());
@@ -128,7 +128,8 @@ public class SoccerActivity extends AppCompatActivity {
         @Override
         //last week we returned (long) position. Now we return the object's database id that we get from line 71
         public long getItemId(int position) {
-            return matches.get(position).getId();
+//            return matches.get(position).getId();
+            return (long) position;
         }
 
         @Override
@@ -140,14 +141,14 @@ public class SoccerActivity extends AppCompatActivity {
             TextView matchInfo = matchDetailView.findViewById(R.id.matchInfo);
             matchInfo.setText(match.getTitle());
 
-            TextView dateInfo = matchDetailView.findViewById(R.id.dateInfo);
-            dateInfo.setText(match.getDate());
+//            TextView dateInfo = matchDetailView.findViewById(R.id.dateInfo);
+//            dateInfo.setText(match.getDate());
 
-            TextView team1Info = matchDetailView.findViewById(R.id.team1Info);
-            team1Info.setText(match.getTeam1());
+//            TextView team1Info = matchDetailView.findViewById(R.id.team1Info);
+//            team1Info.setText(match.getTeam1());
 
-            TextView team2Info = matchDetailView.findViewById(R.id.team2Info);
-            team2Info.setText(match.getTeam2());
+//            TextView team2Info = matchDetailView.findViewById(R.id.team2Info);
+//            team2Info.setText(match.getTeam2());
 
             return matchDetailView;
         }
@@ -241,7 +242,7 @@ public class SoccerActivity extends AppCompatActivity {
                     String date = match.getString("date");
                     String team1 = match.getJSONObject("side1").getString("name");
                     String team2 = match.getJSONObject("side2").getString("name");
-                    String urlFinal = null;
+//                    String urlProcessed = null;
 
                     // for url:
                     //get string under embed object of videos array
@@ -261,15 +262,16 @@ public class SoccerActivity extends AppCompatActivity {
                         //remove everything including after url by finding index of next ':
                         int indexToCutAt = urlParsed.indexOf("'");
                         String urlProcessed = urlParsed.substring(0, indexToCutAt);
-                        urlFinal = urlProcessed;
+
+                        matches.add(new Match(title, date, team1, team2, urlProcessed));
                     }
 
                     publishProgress(50);
-                    matches.add(new Match(title, date, team1, team2, urlFinal));
+
                     publishProgress(75);
                 }
             } catch (Exception e) {
-                //do something
+                e.printStackTrace(); //do something
             }
 
             publishProgress(100);
