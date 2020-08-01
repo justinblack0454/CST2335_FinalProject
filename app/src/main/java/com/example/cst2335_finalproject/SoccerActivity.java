@@ -1,5 +1,6 @@
 package com.example.cst2335_finalproject;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -96,7 +97,12 @@ public class SoccerActivity extends AppCompatActivity {
 
             //What the yes button does
             alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
-
+                //takes user to soccer highlights page
+                    Intent goToHighlightVideo = new Intent(SoccerActivity.this, SoccerHighlightActivity.class);
+                    //sends the title and url to the next activity, where it is used by the videoview
+                    goToHighlightVideo.putExtra("TITLE", selectedMatch.getTitle());
+                    goToHighlightVideo.putExtra("URL", selectedMatch.getUrl());
+                    startActivity(goToHighlightVideo);
                 //add toast or snackbard here perhaps
             });
 
@@ -121,7 +127,8 @@ public class SoccerActivity extends AppCompatActivity {
         }
 
         @Override
-        public Object getItem(int position) {
+        public Match getItem(int position) {
+
             return matches.get(position);
         }
 
@@ -138,17 +145,17 @@ public class SoccerActivity extends AppCompatActivity {
             LayoutInflater inflater = getLayoutInflater();
             View matchDetailView = inflater.inflate(R.layout.match_details, parent, false);
 
-            TextView matchInfo = matchDetailView.findViewById(R.id.matchInfo);
-            matchInfo.setText(match.getTitle());
+            TextView matchInfo = (TextView) matchDetailView.findViewById(R.id.matchInfo);
+            matchInfo.setText(getItem(position).getTitle());
 
-//            TextView dateInfo = matchDetailView.findViewById(R.id.dateInfo);
-//            dateInfo.setText(match.getDate());
+            TextView dateInfo = matchDetailView.findViewById(R.id.dateInfo);
+            dateInfo.setText(getItem(position).getDate());
 
-//            TextView team1Info = matchDetailView.findViewById(R.id.team1Info);
-//            team1Info.setText(match.getTeam1());
+            TextView team1Info = matchDetailView.findViewById(R.id.team1Info);
+            team1Info.setText(getItem(position).getTeam1());
 
-//            TextView team2Info = matchDetailView.findViewById(R.id.team2Info);
-//            team2Info.setText(match.getTeam2());
+            TextView team2Info = matchDetailView.findViewById(R.id.team2Info);
+            team2Info.setText(getItem(position).getTeam2());
 
             return matchDetailView;
         }
@@ -242,7 +249,7 @@ public class SoccerActivity extends AppCompatActivity {
                     String date = match.getString("date");
                     String team1 = match.getJSONObject("side1").getString("name");
                     String team2 = match.getJSONObject("side2").getString("name");
-//                    String urlProcessed = null;
+
 
                     // for url:
                     //get string under embed object of videos array
@@ -265,9 +272,6 @@ public class SoccerActivity extends AppCompatActivity {
 
                         matches.add(new Match(title, date, team1, team2, urlProcessed));
                     }
-
-                    publishProgress(50);
-
                     publishProgress(75);
                 }
             } catch (Exception e) {
