@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <activity android:name=".SoccerActivity" />
         <activity android:name=".DeezerActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
