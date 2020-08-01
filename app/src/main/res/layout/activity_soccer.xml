@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_weight="1"
+    android:orientation="vertical">
+
 
     <ProgressBar
         android:id="@+id/soccerProgressBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
 
     <TextView
         android:id="@+id/soccerHighlights"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Matches:"/>
+        android:text="Matches:"
+        android:layout_below="@id/soccerProgressBar" />
+
+    <Button
+        android:id="@+id/favouritesButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Go to favourites"
+        android:layout_below="@+id/soccerHighlights"/>
+
+
 
     <ListView
         android:id="@+id/gameTitlesList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/favouritesButton"></ListView>
 
 
 
-</LinearLayout>
+</RelativeLayout>

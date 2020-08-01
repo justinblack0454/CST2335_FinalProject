@@ -7,11 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
@@ -27,13 +29,20 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
+ * Author: Jonathan Cordingley
+ * Title: Soccer Match Highlights
+ * Version: 1.0 August 7th, 2020
  * Retrieves a list of recent soccer matches that were played from https://www.scorebat.com/video-api/v1/
  */
+
 public class SoccerActivity extends AppCompatActivity {
 
     ArrayList<Match> matches = new ArrayList<>();
+    ArrayList<Match> favourites = new ArrayList<>();
     MatchListAdapter matchAdapter;
     ProgressBar progressBar;
+    Button goToFavourites;
+    TextView listHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +56,61 @@ public class SoccerActivity extends AppCompatActivity {
 
         ListView listOfGameTitles = (ListView) findViewById(R.id.gameTitlesList);
         listOfGameTitles.setAdapter(matchAdapter = new MatchListAdapter());
+
+        //add to favourites with long click
+        listOfGameTitles.setOnItemLongClickListener((parent, view, position, id) -> {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            Match longSelectedMatch = matches.get(position);
+            alertDialogBuilder.setTitle(longSelectedMatch.getTitle() + "\n\nWould you like to save this match to your favourites?");
+
+            //what is the message:
+            alertDialogBuilder.setMessage("The date is: " + longSelectedMatch.getDate() + "\n\nTeam 1 is: " + longSelectedMatch.getTeam1() + "\n\nTeam 2 is: " + longSelectedMatch.getTeam2());
+
+            //What the yes button does
+            alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
+                favourites.add(longSelectedMatch);
+
+                //add toast or snack bar here perhaps
+
+            });
+
+            //What the no button does:
+            alertDialogBuilder.setNegativeButton("No", (click, arg) -> {
+
+            });
+
+            //Show the dialog:
+            alertDialogBuilder.create().show();
+
+            return true;
+        });
+
+        //add to watch highlights with item click
+        listOfGameTitles.setOnItemClickListener((list, item, position, id) -> {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            Match selectedMatch = matches.get(position);
+            alertDialogBuilder.setTitle(selectedMatch.getTitle() + "\n\nWould you like to watch the match highlights?");
+
+            //what is the message:
+            alertDialogBuilder.setMessage("The date is: " + selectedMatch.getDate() + "\n\nTeam 1 is: " + selectedMatch.getTeam1() + "\n\nTeam 2 is: " + selectedMatch.getTeam2());
+
+            //What the yes button does
+            alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
+
+                //add toast or snackbard here perhaps
+            });
+
+            //What the no button does:
+            alertDialogBuilder.setNegativeButton("No", (click, arg) -> {
+
+            });
+
+            //Show the dialog:
+            alertDialogBuilder.create().show();
+        });
+
+        goToFavourites = findViewById(R.id.favouritesButton);
+//        goToFavourites.setOnClickListener();
     }
 
     private class MatchListAdapter extends BaseAdapter {
