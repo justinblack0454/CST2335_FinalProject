@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +53,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Uses the Deezer api to search and list the top 50 song list of a searched artist
@@ -59,6 +61,7 @@ import java.util.HashMap;
 public class DeezerActivity extends AppCompatActivity {
 
     ArrayList<Song> tracklist = new ArrayList<>();
+    ArrayList<Song> favourites = new ArrayList<>();
     TrackListAdapter adapter;
     Boolean isTablet;
     ImageView albumCoverView;
@@ -70,11 +73,13 @@ public class DeezerActivity extends AppCompatActivity {
     String songListUrl;
     TextView trackListTitle;
     Bitmap albumCover = null;
+    List<Bitmap> albumsCovers = new ArrayList<>();
     private SharedPreferences prefs;
     private String savedSearchString;
     SQLiteDatabase db;
     String artistName;
     String coverLink;
+    Bitmap bm;
     public static final long serialVersionUID = 1L;
     public static final String ARTIST = "ARTIST";
     public static final String SONG = "SONG";
@@ -84,6 +89,8 @@ public class DeezerActivity extends AppCompatActivity {
     public static final String COVER = "COVER";
 
     DetailsFragment aFragment;
+
+    private Handler mainHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,21 +103,22 @@ public class DeezerActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.deezerProgressBar);
         searchField = findViewById(R.id.searchField);
         Button searchButton = findViewById(R.id.searchButton);
+        Button favsButton = findViewById(R.id.favsButton);
         SongQuery songQuery = new SongQuery();
         //songQuery.execute("https://api.deezer.com/search/artist/?q=paramore&output=xml");
         searchField.setText(savedSearchString);
         //saveSharedPrefs(searchField.getText().toString());
-        //loadDataFromDatabase();
+        loadDataFromDatabase();
 
         ListView songListView = findViewById(R.id.songListWindow);
         songListView.setAdapter(adapter = new TrackListAdapter());
 
-        songListView.setOnItemClickListener((list, item, position, id) -> {
-                Intent nextActivity = new Intent(DeezerActivity.this, EmptyActivity.class);
-                nextActivity.putExtra("tracklist", tracklist);
-                startActivity (nextActivity);
-
-        });
+//        songListView.setOnItemClickListener((list, item, position, id) -> {
+//                Intent nextActivity = new Intent(DeezerActivity.this, EmptyActivity.class);
+//                nextActivity.putExtra("tracklist", tracklist);
+//                startActivity (nextActivity);
+//
+//        });
         /**
          * long click listener for when user presses on a song from ListView, displays Alert
          */
@@ -135,11 +143,20 @@ public class DeezerActivity extends AppCompatActivity {
                         newRowValues.put(MyOpener.SONG, song.getSongTitle());
                         newRowValues.put(MyOpener.DURATION, song.getDuration());
                         newRowValues.put(MyOpener.ALBUM, song.getAlbumTitle());
-                        //newRowValues.put(MyOpener.COVER, song.getAlbumCover());
+                        newRowValues.put(MyOpener.COVER, song.getAlbumCover());
 
                         db.insert(MyOpener.TABLE_NAME, null, newRowValues);
                         loadDataFromDatabase();
                         adapter.notifyDataSetChanged();
+
+
+                    })
+
+                    .setNegativeButton("Delete song?", (click, arg) -> {
+                        deleteFaveSong(song);
+                        favourites.remove(pos);
+                        adapter.notifyDataSetChanged();
+                        //getSupportFragmentManager().beginTransaction().remove(aFragment).commit();
 
                     })
 
@@ -158,9 +175,16 @@ public class DeezerActivity extends AppCompatActivity {
         searchButton.setOnClickListener(btn -> {
             //comingSoon.show();
             artistName = searchField.getText().toString();
+            tracklist.clear();
             new SongQuery().execute("https://api.deezer.com/search/artist/?q=" + searchField.getText().toString().replace(" ", "") + "&output=xml");
             saveSharedPrefs(searchField.getText().toString());
         });
+
+        favsButton.setOnClickListener((btn -> {
+            Intent nextActivity = new Intent(DeezerActivity.this, EmptyActivity.class);
+            nextActivity.putExtra("tracklist", favourites);
+            startActivity (nextActivity);
+        }));
     }
 
     @Override
@@ -197,13 +221,19 @@ public class DeezerActivity extends AppCompatActivity {
         editor.commit();
     }
 
+    protected void deleteFaveSong(Song song)
+    {
+        db.delete(MyOpener.TABLE_NAME, MyOpener.SONG + "= ?", new String[] {song.getSongTitle()});
+    }
+
     private void loadDataFromDatabase() {
         MyOpener dbOpener = new MyOpener(this);
         db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
+        //db.execSQL("DROP TABLE " + MyOpener.TABLE_NAME);
 
 
         // We want to get all of the columns. Look at MyOpener.java for the definitions:
-        String [] columns = {MyOpener.COL_ID, MyOpener.ARTIST, MyOpener.SONG, MyOpener.DURATION, MyOpener.ALBUM};
+        String [] columns = {MyOpener.COL_ID, MyOpener.ARTIST, MyOpener.SONG, MyOpener.DURATION, MyOpener.ALBUM, MyOpener.COVER};
         //query all the results from the database:
         Cursor results = db.query(false, MyOpener.TABLE_NAME, columns, null, null, null, null, null, null);
 
@@ -213,6 +243,7 @@ public class DeezerActivity extends AppCompatActivity {
         int songColumnIndex = results.getColumnIndex(MyOpener.SONG);
         int durationColumnIndex = results.getColumnIndex(MyOpener.DURATION);
         int albumColIndex = results.getColumnIndex(MyOpener.ALBUM);
+        int coverColIndex = results.getColumnIndex(MyOpener.COVER);
         int idColIndex = results.getColumnIndex(MyOpener.COL_ID);
 
         //iterate over the results, return true if there is a next item:
@@ -222,10 +253,11 @@ public class DeezerActivity extends AppCompatActivity {
             String song = results.getString(songColumnIndex);
             String duration = results.getString(durationColumnIndex);
             String album = results.getString(albumColIndex);
+            String coverLink = results.getString(coverColIndex);
             long id = results.getLong(idColIndex);
 
             //add the new Contact to the array list:
-            tracklist.add(new Song(artist, song, duration, album, coverLink));
+            favourites.add(new Song(artist, song, duration, album, coverLink));
         }
 
         //At this point, the contactsList array has loaded every row from the cursor.
@@ -263,11 +295,15 @@ public class DeezerActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             Song song = (Song) getItem(position);
+            Bitmap cover = albumsCovers.get(position);
             LayoutInflater inflater = getLayoutInflater();
             View newView = inflater.inflate(R.layout.searchedsong, parent, false);
 
             TextView songInfo = newView.findViewById(R.id.songDetails);
             songInfo.setText(song.getSongTitle());
+
+            ImageView coverInfo = newView.findViewById((R.id.albumImage));
+            coverInfo.setImageBitmap(cover);
 
             return newView;
         }
@@ -385,7 +421,8 @@ public class DeezerActivity extends AppCompatActivity {
                     FileInputStream fis = null;
                     try {    fis = openFileInput(albumCover + ".png");   }
                     catch (FileNotFoundException e) {    e.printStackTrace();  }
-                    Bitmap bm = BitmapFactory.decodeStream(fis);
+                    bm = BitmapFactory.decodeStream(fis);
+                    albumsCovers.add(bm);
 
                     //Song Details
                     String songTitle = foundSong.getString("title");
@@ -429,10 +466,11 @@ public class DeezerActivity extends AppCompatActivity {
             progressBar.setProgress(value[0]);
 
         }
+
         public void onPostExecute(String fromDoInBackground)
         {
             searchField.setText(artistName);
-            //albumCoverView.setImageBitmap(albumCover);
+            //albumCoverView.setImageBitmap(bm);
             progressBar.setVisibility(View.INVISIBLE);
             trackListTitle.setVisibility(View.VISIBLE);
 
@@ -450,14 +488,14 @@ public class DeezerActivity extends AppCompatActivity {
         String albumTitle;
         String coverLink;
 
-        protected Song(String artist, String title, String duration, String albumTitle){
-            this.artist = artist;
-            this.title = title;
-            this.duration = duration;
-            this.albumTitle = albumTitle;
-        }
+//        protected Song(String artist, String title, String duration, String albumTitle){
+//            this.artist = artist;
+//            this.title = title;
+//            this.duration = duration;
+//            this.albumTitle = albumTitle;
+//        }
 
-        private Song(String artist, String title, String duration, String albumTitle, String coverLink) {
+        protected Song(String artist, String title, String duration, String albumTitle, String coverLink) {
             this.artist = artist;
             this.title = title;
             this.duration = duration;
@@ -465,21 +503,21 @@ public class DeezerActivity extends AppCompatActivity {
             this.coverLink = coverLink;
         }
 
-        private String getArtist() { return artist; }
+        protected String getArtist() { return artist; }
 
         protected String getSongTitle() {
             return title;
         }
 
-        private String getDuration() {
+        protected String getDuration() {
             return duration;
         }
 
-        private String getAlbumTitle() {
+        protected String getAlbumTitle() {
             return albumTitle;
         }
 
-        private String getAlbumCover() { return coverLink; }
+        protected String getAlbumCover() { return coverLink; }
 
         public void setId(long id) {
             this.id = id;

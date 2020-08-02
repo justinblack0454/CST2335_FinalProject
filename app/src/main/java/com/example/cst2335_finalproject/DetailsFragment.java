@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.cst2335_finalproject.DeezerActivity.Song;
@@ -30,7 +31,7 @@ import java.util.List;
  */
 public class DetailsFragment extends Fragment {
 
-    SQLiteDatabase db;
+    MyOpener db;
     private Bundle dataFromActivity;
     ArrayList<Song> tracklist = null;
     private long id;
@@ -45,36 +46,76 @@ public class DetailsFragment extends Fragment {
     }
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        db = new MyOpener(getContext());
+        db.getWritableDatabase();
+        tracklist = db.getAll();
 
         dataFromActivity = getArguments();
-        id = dataFromActivity.getLong(DeezerActivity.ITEM_ID );
-        isSend = dataFromActivity.getInt(DeezerActivity.SONG);
-
+        //tracklist = (ArrayList<Song>) dataFromActivity.getSerializable("tracklist");
+        //tracklist.clear();
         // Inflate the layout for this fragment
         View result =  inflater.inflate(R.layout.fragment_details, container, false);
 
         //show the message
         TextView message = (TextView)result.findViewById(R.id.fragmessage);
-        message.setText("MESSAGE: " + dataFromActivity.getString(DeezerActivity.SONG));
+        message.setText("Your Favourites:");
 
         //show the id:
         TextView idView = (TextView)result.findViewById(R.id.idmessage);
-        idView.setText("ID=" + id);
+        idView.setText("ID= " + id);
 
-        //show the checkbox
-        CheckBox checkBox = (CheckBox)result.findViewById(R.id.fragcheckbox);
-        if(isSend == 1) {
-            checkBox.toggle();
-        }
 
         //favsView
         ListView favsView = (ListView)result.findViewById(R.id.favView);
         favsView.setAdapter(adapter = new TrackListAdapter());
 
+        favsView.setOnItemLongClickListener( (p, b, pos, id) -> {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+            Song song = tracklist.get(pos);
 
+            alertDialogBuilder.setTitle("Here are some extra details: ")
+
+                    //What is the message:
+                    .setMessage("The selected row is: " + pos + "\n\n" +
+                            "Song title: " + song.getSongTitle() + "\n\n" +
+                            "Song duration: " + song.getDuration() + "\n\n" +
+                            "Album title: " + song.getAlbumTitle() + "\n\n" +
+                            "Album cover: " + song.getAlbumCover() //generate albumView xml to display this cover actually
+                    )
+
+                    //positive button to favourite the song which then put song in DB and opens fragment with the favourties db view
+                    .setPositiveButton("add to favourites", (click, arg) -> {
+                        ContentValues newRowValues = new ContentValues();
+                        newRowValues.put(MyOpener.ARTIST, song.getArtist());
+                        newRowValues.put(MyOpener.SONG, song.getSongTitle());
+                        newRowValues.put(MyOpener.DURATION, song.getDuration());
+                        newRowValues.put(MyOpener.ALBUM, song.getAlbumTitle());
+                        newRowValues.put(MyOpener.COVER, song.getAlbumCover());
+
+                        db.addSong(newRowValues); //Double check to make sure
+
+                        adapter.notifyDataSetChanged();
+
+
+                    })
+
+                    .setNegativeButton("Delete song?", (click, arg) -> {
+                        deleteFaveSong(song);
+                        tracklist.remove(pos);
+                        adapter.notifyDataSetChanged();
+                        //getSupportFragmentManager().beginTransaction().remove(aFragment).commit();
+
+                    })
+
+                    //Show the dialog
+                    .create().show();
+
+            return true;
+        });
         // get the delete button, and add a click listener:
         Button finishButton = (Button)result.findViewById(R.id.hereButton);
         finishButton.setOnClickListener( clk -> {
@@ -121,6 +162,12 @@ public class DetailsFragment extends Fragment {
 //        }
 //    }
 //
+    protected void deleteFaveSong(Song song)
+    //TODO
+    {
+        db.deleteSong(song);
+    }
+
     private class TrackListAdapter extends BaseAdapter {
 
         @Override

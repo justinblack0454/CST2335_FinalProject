@@ -39,6 +39,13 @@ android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
+<Button
+    android:id="@+id/favsButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Favourites"
+    android:layout_alignParentBottom="true"/>
+
 <ProgressBar
     android:id="@+id/deezerProgressBar"
     android:layout_width="match_parent"

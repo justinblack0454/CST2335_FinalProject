@@ -1,5 +1,6 @@
 package com.example.cst2335_finalproject;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import com.example.cst2335_finalproject.DeezerActivity.Song;
 
@@ -14,8 +15,9 @@ public class EmptyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_empty);
 
-        Bundle dataToPass = getIntent().getExtras();
-        //ArrayList<Song> tracklist = dataToPass.getParcelableArrayList("tracklist");
+        Bundle dataToPass = new Bundle();
+        ArrayList<Song> tracklist = (ArrayList<Song>) getIntent().getSerializableExtra("tracklist");
+        dataToPass.putSerializable("tracklist", tracklist);
 
         DetailsFragment aFragment = new DetailsFragment();
         aFragment.setArguments(dataToPass);

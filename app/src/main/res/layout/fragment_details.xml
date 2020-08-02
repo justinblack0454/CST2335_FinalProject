@@ -22,18 +22,12 @@
         android:layout_below="@+id/fragmessage"
         android:text="test" />
 
-    <CheckBox
-        android:id="@+id/fragcheckbox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/idmessage"
-        android:text="test" />
 
     <ListView
         android:id="@+id/favView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragcheckbox"
+        android:layout_below="@+id/idmessage"
         android:layout_above="@+id/hereButton" />
 
     <Button
