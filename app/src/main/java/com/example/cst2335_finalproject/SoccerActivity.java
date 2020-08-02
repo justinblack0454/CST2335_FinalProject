@@ -1,6 +1,10 @@
 package com.example.cst2335_finalproject;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,6 +49,14 @@ public class SoccerActivity extends AppCompatActivity {
     Button goToFavourites;
     TextView listHeader;
 
+    SQLiteDatabase db;
+    int positionClicked = 0;
+    public static final String TITLE = "TITLE";
+    public static final String DATE = "DATE";
+    public static final String TEAM_1 = "TEAM1";
+    public static final String TEAM_2 = "TEAM2";
+    public static final String URL = "URL";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +66,8 @@ public class SoccerActivity extends AppCompatActivity {
 
         MatchQuery query = new MatchQuery();
         query.execute("https://www.scorebat.com/video-api/v1/");
+
+        loadDataFromDatabase();
 
         ListView listOfGameTitles = (ListView) findViewById(R.id.gameTitlesList);
         listOfGameTitles.setAdapter(matchAdapter = new MatchListAdapter());
@@ -71,6 +85,14 @@ public class SoccerActivity extends AppCompatActivity {
             alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
                 favourites.add(longSelectedMatch);
 
+                //Create a bundle to pass data to the new fragment
+                Bundle dataToPass = new Bundle();
+                dataToPass.putString(TITLE, longSelectedMatch.getTitle());
+                dataToPass.putString(DATE, longSelectedMatch.getDate());
+                dataToPass.putString(TEAM_1, longSelectedMatch.getTeam1());
+                dataToPass.putString(TEAM_2, longSelectedMatch.getTeam2());
+                dataToPass.putString(URL, longSelectedMatch.getUrl());
+
                 //add toast or snack bar here perhaps
 
             });
@@ -86,7 +108,7 @@ public class SoccerActivity extends AppCompatActivity {
             return true;
         });
 
-        //add to watch highlights with item click
+        //watch highlights with item click
         listOfGameTitles.setOnItemClickListener((list, item, position, id) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             Match selectedMatch = matches.get(position);
@@ -98,12 +120,20 @@ public class SoccerActivity extends AppCompatActivity {
             //What the yes button does
             alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
                 //takes user to soccer highlights page
-                    Intent goToHighlightVideo = new Intent(SoccerActivity.this, SoccerHighlightActivity.class);
-                    //sends the title and url to the next activity, where it is used by the videoview
-                    goToHighlightVideo.putExtra("TITLE", selectedMatch.getTitle());
-                    goToHighlightVideo.putExtra("URL", selectedMatch.getUrl());
-                    startActivity(goToHighlightVideo);
-                //add toast or snackbard here perhaps
+
+//                    Intent goToHighlightVideo = new Intent(SoccerActivity.this, SoccerHighlightActivity.class);
+////                    //sends the title and url to the next activity, where it is used by the videoview
+////                    goToHighlightVideo.putExtra("TITLE", selectedMatch.getTitle());
+////                    goToHighlightVideo.putExtra("URL", selectedMatch.getUrl());
+////                    startActivity(goToHighlightVideo);
+                Bundle dataToPass = new Bundle();
+                dataToPass.putString(URL, selectedMatch.getUrl());
+
+                Intent nextActivity = new Intent(SoccerActivity.this, SoccerHighlightActivity.class);
+                nextActivity.putExtras(dataToPass); //send data to next activity
+                startActivity(nextActivity); //make the transition
+
+                //add toast or snackbar here perhaps
             });
 
             //What the no button does:
@@ -115,8 +145,13 @@ public class SoccerActivity extends AppCompatActivity {
             alertDialogBuilder.create().show();
         });
 
+        //Takes user to favourites page, acceses the database
+
         goToFavourites = findViewById(R.id.favouritesButton);
-//        goToFavourites.setOnClickListener();
+        goToFavourites.setOnClickListener( v -> {
+            Intent goToFavourites = new Intent(SoccerActivity.this, SoccerFavourites.class);
+            startActivity(goToFavourites);
+        });
     }
 
     private class MatchListAdapter extends BaseAdapter {
@@ -135,8 +170,8 @@ public class SoccerActivity extends AppCompatActivity {
         @Override
         //last week we returned (long) position. Now we return the object's database id that we get from line 71
         public long getItemId(int position) {
-//            return matches.get(position).getId();
-            return (long) position;
+            return matches.get(position).getId();
+//            return (long) position;
         }
 
         @Override
@@ -148,20 +183,21 @@ public class SoccerActivity extends AppCompatActivity {
             TextView matchInfo = (TextView) matchDetailView.findViewById(R.id.matchInfo);
             matchInfo.setText(getItem(position).getTitle());
 
-            TextView dateInfo = matchDetailView.findViewById(R.id.dateInfo);
+            TextView dateInfo = (TextView) matchDetailView.findViewById(R.id.dateInfo);
             dateInfo.setText(getItem(position).getDate());
 
-            TextView team1Info = matchDetailView.findViewById(R.id.team1Info);
+            TextView team1Info = (TextView) matchDetailView.findViewById(R.id.team1Info);
             team1Info.setText(getItem(position).getTeam1());
 
-            TextView team2Info = matchDetailView.findViewById(R.id.team2Info);
+            TextView team2Info = (TextView) matchDetailView.findViewById(R.id.team2Info);
             team2Info.setText(getItem(position).getTeam2());
 
             return matchDetailView;
         }
     }
 
-    private class Match {
+    //changed from private because I'm lazy
+    public class Match {
         String title;
         String team1;
         String team2;
@@ -171,13 +207,19 @@ public class SoccerActivity extends AppCompatActivity {
         String date;
         long id;
 
-        public Match(String title, String date, String team1, String team2, String url) {
+        public Match(String title, String date, String team1, String team2, String url, long id){
             this.title = title;
             this.date = date;
             this.team1 = team1;
             this.team2 = team2;
             this.url = url;
+            this.id = id;
         }
+
+        public Match(String title, String date, String team1, String team2, String url) {
+            this(title, date, team1, team2, url, 0);
+        }
+
 
         public String getTitle() {
             return title;
@@ -292,6 +334,93 @@ public class SoccerActivity extends AppCompatActivity {
         public void onPostExecute(String fromDoInBackground) {
             progressBar.setVisibility(View.INVISIBLE);
 
+        }
+    }
+
+    private void loadDataFromDatabase() {
+        MyOpener dbOpener = new MyOpener(this);
+        db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
+
+
+        // We want to get all of the columns. Look at MyOpener.java for the definitions:
+        String[] columns = {MyOpener.COL_ID, MyOpener.COL_TITLE, MyOpener.COL_DATE, MyOpener.COL_TEAM_1, MyOpener.COL_TEAM_2, MyOpener.COL_URL};
+        //query all the results from the database:
+        Cursor results = db.query(false, MyOpener.TABLE_NAME, columns, null, null, null, null, null, null);
+
+
+        //Now the results object has rows of results that match the query.
+        //find the column indices:
+        int titleColIndex = results.getColumnIndex(MyOpener.COL_TITLE);
+        int dateColIndex = results.getColumnIndex(MyOpener.COL_DATE);
+        int idColIndex = results.getColumnIndex(MyOpener.COL_ID);
+        int team1ColIndex = results.getColumnIndex(MyOpener.COL_TEAM_1);
+        int team2ColIndex = results.getColumnIndex(MyOpener.COL_TEAM_2);
+        int urlColIndex = results.getColumnIndex(MyOpener.COL_URL);
+
+
+        //iterate over the results, return true if there is a next item:
+        while (results.moveToNext()) {
+            String title = results.getString(titleColIndex);
+            String date = results.getString(dateColIndex);
+            String team1 = results.getString(team1ColIndex);
+            String team2 = results.getString(team2ColIndex);
+            String url = results.getString(urlColIndex);
+            long id = results.getLong(idColIndex);
+
+            //add the new Contact to the array list:
+            favourites.add(new Match(title, date, team1, team2, url, id));
+        }
+
+        //At this point, the contactsList array has loaded every row from the cursor.
+//        printCursor(results, db.getVersion());
+    }
+
+    public class MyOpener extends SQLiteOpenHelper {
+
+        protected final static String DATABASE_NAME = "FavouritesDB";
+        protected final static int VERSION_NUM = 1;
+        public final static String TABLE_NAME = "Favourites";
+        public final static String COL_TITLE = "TITLE";
+        public final static String COL_DATE = "DATE";
+        public final static String COL_ID = "_id";
+        public final static String COL_TEAM_1 = "TEAM1";
+        public final static String COL_TEAM_2 = "TEAM2";
+        public final static String COL_URL = "URL";
+
+        public MyOpener(Context ctx) {
+            super(ctx, DATABASE_NAME, null, VERSION_NUM);
+        }
+
+
+        //This function gets called if no database file exists.
+        //Look on your device in the /data/data/package-name/database directory.
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL("CREATE TABLE " + TABLE_NAME + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COL_TITLE + " text,"
+                    + COL_DATE + " text,"
+                    + COL_TEAM_1 + " text,"
+                    + COL_TEAM_2 + " text,"
+                    + COL_URL + " text);");  // add or remove columns
+        }
+
+        //this function gets called if the database version on your device is lower than VERSION_NUM
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {   //Drop the old table:
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+
+            //Create the new table:
+            onCreate(db);
+        }
+
+
+        //this function gets called if the database version on your device is higher than VERSION_NUM
+        @Override
+        public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {   //Drop the old table:
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+
+            //Create the new table:
+            onCreate(db);
         }
     }
 }
