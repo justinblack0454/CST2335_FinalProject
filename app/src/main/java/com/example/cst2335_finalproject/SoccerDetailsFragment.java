@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SoccerHighlightFragment#newInstance} factory method to
+ * Use the {@link SoccerDetailsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SoccerHighlightFragment extends Fragment {
+public class SoccerDetailsFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -28,11 +28,13 @@ public class SoccerHighlightFragment extends Fragment {
     private String team1;
     private String team2;
     private String url;
+
+    MySoccerOpener db;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    public SoccerHighlightFragment() {
+    public SoccerDetailsFragment() {
         // Required empty public constructor
     }
 
@@ -45,8 +47,8 @@ public class SoccerHighlightFragment extends Fragment {
      * @return A new instance of fragment SoccerHighlight.
      */
     // TODO: Rename and change types and number of parameters
-    public static SoccerHighlightFragment newInstance(String param1, String param2) {
-        SoccerHighlightFragment fragment = new SoccerHighlightFragment();
+    public static SoccerDetailsFragment newInstance(String param1, String param2) {
+        SoccerDetailsFragment fragment = new SoccerDetailsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);

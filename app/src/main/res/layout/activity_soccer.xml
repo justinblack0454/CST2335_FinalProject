@@ -5,35 +5,27 @@
     android:layout_weight="1"
     android:orientation="vertical">
 
-
     <ProgressBar
         android:id="@+id/soccerProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"/>
-
     <TextView
         android:id="@+id/soccerHighlights"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Matches:"
         android:layout_below="@id/soccerProgressBar" />
-
     <Button
         android:id="@+id/favouritesButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Go to favourites"
         android:layout_below="@+id/soccerHighlights"/>
-
-
-
     <ListView
         android:id="@+id/gameTitlesList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/favouritesButton"></ListView>
-
-
-
+        android:layout_below="@id/favouritesButton"/>
 </RelativeLayout>
