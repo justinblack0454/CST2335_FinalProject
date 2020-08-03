@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item android:id="@+id/deezer_instructions"
+        android:title="Instruction for this app"
+        android:orderInCategory="50" />
+
+    <item android:id="@+id/about_deezer_api"
+        android:orderInCategory="75"
+        android:title="About the API" />
+
+    <item android:id="@+id/deezer_donate"
+        android:title="Donate to the project"
+        android:orderInCategory="100"/> <!-- This uses showAsAction=never, so look at title= parameter -->
+</menu>

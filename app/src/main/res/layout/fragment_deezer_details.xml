@@ -4,9 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/design_default_color_on_primary"
-    tools:context=".DetailsFragment">
+    tools:context=".DeezerDetailsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/fragmessage"
         android:layout_width="match_parent"
@@ -14,27 +13,18 @@
         android:textSize="20dp"
         android:text="test" />
 
-    <TextView
-        android:id="@+id/idmessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:layout_below="@+id/fragmessage"
-        android:text="test" />
-
-
     <ListView
         android:id="@+id/favView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/idmessage"
-        android:layout_above="@+id/hereButton" />
+        android:layout_below="@+id/fragmessage"
+        android:layout_above="@+id/hideButton" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="test"
-        android:id="@+id/hereButton"/>
+        android:text="Hide"
+        android:id="@+id/hideButton"/>
 
 </RelativeLayout>

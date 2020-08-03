@@ -9,10 +9,10 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,40 +25,43 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Array;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
  * Uses the Deezer api to search and list the top 50 song list of a searched artist
  */
-public class DeezerActivity extends AppCompatActivity {
+public class DeezerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     ArrayList<Song> tracklist = new ArrayList<>();
     ArrayList<Song> favourites = new ArrayList<>();
@@ -88,7 +91,7 @@ public class DeezerActivity extends AppCompatActivity {
     public static final String ALBUM = "ALBUM";
     public static final String COVER = "COVER";
 
-    DetailsFragment aFragment;
+    DeezerDetailsFragment aFragment;
 
     private Handler mainHandler = new Handler();
 
@@ -110,17 +113,34 @@ public class DeezerActivity extends AppCompatActivity {
         //saveSharedPrefs(searchField.getText().toString());
         loadDataFromDatabase();
 
+        //This gets the toolbar from the layout:
+        Toolbar tBar = (Toolbar)findViewById(R.id.toolbar);
+
+        //This loads the toolbar, which calls onCreateOptionsMenu below:
+        setSupportActionBar(tBar);
+
+        //For NavigationDrawer:
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+                drawer, tBar, R.string.deezeropen, R.string.deezerclose);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         ListView songListView = findViewById(R.id.songListWindow);
         songListView.setAdapter(adapter = new TrackListAdapter());
 
-//        songListView.setOnItemClickListener((list, item, position, id) -> {
-//                Intent nextActivity = new Intent(DeezerActivity.this, EmptyActivity.class);
-//                nextActivity.putExtra("tracklist", tracklist);
-//                startActivity (nextActivity);
-//
-//        });
+        songListView.setOnItemClickListener((p, b, pos, id) -> {
+            Intent nextActivity = new Intent(DeezerActivity.this, SelectedSong.class);
+            nextActivity.putExtra("song", tracklist.get(pos));
+            startActivity (nextActivity);
+        });
+
         /**
          * long click listener for when user presses on a song from ListView, displays Alert
+         * with details of the selected song
          */
         songListView.setOnItemLongClickListener( (p, b, pos, id) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -139,24 +159,16 @@ public class DeezerActivity extends AppCompatActivity {
                     //positive button to favourite the song which then put song in DB and opens fragment with the favourties db view
                     .setPositiveButton("add to favourites", (click, arg) -> {
                         ContentValues newRowValues = new ContentValues();
-                        newRowValues.put(MyOpener.ARTIST, artistName);
-                        newRowValues.put(MyOpener.SONG, song.getSongTitle());
-                        newRowValues.put(MyOpener.DURATION, song.getDuration());
-                        newRowValues.put(MyOpener.ALBUM, song.getAlbumTitle());
-                        newRowValues.put(MyOpener.COVER, song.getAlbumCover());
+                        newRowValues.put(DeezerDB.ARTIST, artistName);
+                        newRowValues.put(DeezerDB.SONG, song.getSongTitle());
+                        newRowValues.put(DeezerDB.DURATION, song.getDuration());
+                        newRowValues.put(DeezerDB.ALBUM, song.getAlbumTitle());
+                        newRowValues.put(DeezerDB.COVER, song.getAlbumCover());
 
-                        db.insert(MyOpener.TABLE_NAME, null, newRowValues);
+                        db.insert(DeezerDB.TABLE_NAME, null, newRowValues);
                         loadDataFromDatabase();
                         adapter.notifyDataSetChanged();
 
-
-                    })
-
-                    .setNegativeButton("Delete song?", (click, arg) -> {
-                        deleteFaveSong(song);
-                        favourites.remove(pos);
-                        adapter.notifyDataSetChanged();
-                        //getSupportFragmentManager().beginTransaction().remove(aFragment).commit();
 
                     })
 
@@ -181,7 +193,7 @@ public class DeezerActivity extends AppCompatActivity {
         });
 
         favsButton.setOnClickListener((btn -> {
-            Intent nextActivity = new Intent(DeezerActivity.this, EmptyActivity.class);
+            Intent nextActivity = new Intent(DeezerActivity.this, DeezerEmptyActivity.class);
             nextActivity.putExtra("tracklist", favourites);
             startActivity (nextActivity);
         }));
@@ -221,30 +233,78 @@ public class DeezerActivity extends AppCompatActivity {
         editor.commit();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.deezer_menu, menu);
+
+
+	    /* slide 15 material:
+	    MenuItem searchItem = menu.findItem(R.id.search_item);
+        SearchView sView = (SearchView)searchItem.getActionView();
+        sView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }  });
+	    */
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String message = null;
+        //Look at your menu XML file. Put a case for every id in that file:
+        switch(item.getItemId())
+        {
+            //what to do when the menu item is selected:
+            case R.id.aboutProject:
+                message = "This is the Deezer activity, written by Justin Black";
+                break;
+            case R.id.geoChoice1:
+                message = "You clicked on GeoActivity";
+                break;
+            case R.id.lyricsChoice2:
+                message = "You clicked on LyricsActivity";
+                break;
+            case R.id.soccerChoice3:
+                message = "You clicked on SoccerActivity";
+                break;
+
+        }
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        return true;
+    }
+
     protected void deleteFaveSong(Song song)
     {
-        db.delete(MyOpener.TABLE_NAME, MyOpener.SONG + "= ?", new String[] {song.getSongTitle()});
+        db.delete(DeezerDB.TABLE_NAME, DeezerDB.SONG + "= ?", new String[] {song.getSongTitle()});
     }
 
     private void loadDataFromDatabase() {
-        MyOpener dbOpener = new MyOpener(this);
+        DeezerDB dbOpener = new DeezerDB(this);
         db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
         //db.execSQL("DROP TABLE " + MyOpener.TABLE_NAME);
 
 
         // We want to get all of the columns. Look at MyOpener.java for the definitions:
-        String [] columns = {MyOpener.COL_ID, MyOpener.ARTIST, MyOpener.SONG, MyOpener.DURATION, MyOpener.ALBUM, MyOpener.COVER};
+        String [] columns = {DeezerDB.COL_ID, DeezerDB.ARTIST, DeezerDB.SONG, DeezerDB.DURATION, DeezerDB.ALBUM, DeezerDB.COVER};
         //query all the results from the database:
-        Cursor results = db.query(false, MyOpener.TABLE_NAME, columns, null, null, null, null, null, null);
+        Cursor results = db.query(false, DeezerDB.TABLE_NAME, columns, null, null, null, null, null, null);
 
         //Now the results object has rows of results that match the query.
         //find the column indices:
-        int artistColumnIndex = results.getColumnIndex(MyOpener.ARTIST);
-        int songColumnIndex = results.getColumnIndex(MyOpener.SONG);
-        int durationColumnIndex = results.getColumnIndex(MyOpener.DURATION);
-        int albumColIndex = results.getColumnIndex(MyOpener.ALBUM);
-        int coverColIndex = results.getColumnIndex(MyOpener.COVER);
-        int idColIndex = results.getColumnIndex(MyOpener.COL_ID);
+        int artistColumnIndex = results.getColumnIndex(DeezerDB.ARTIST);
+        int songColumnIndex = results.getColumnIndex(DeezerDB.SONG);
+        int durationColumnIndex = results.getColumnIndex(DeezerDB.DURATION);
+        int albumColIndex = results.getColumnIndex(DeezerDB.ALBUM);
+        int coverColIndex = results.getColumnIndex(DeezerDB.COVER);
+        int idColIndex = results.getColumnIndex(DeezerDB.COL_ID);
 
         //iterate over the results, return true if there is a next item:
         while(results.moveToNext())
@@ -271,6 +331,42 @@ public class DeezerActivity extends AppCompatActivity {
         Log.v("Cursor col names", Arrays.toString(c.getColumnNames()));
         Log.v("Cursor number of rows", String.valueOf(c.getCount()));
         Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(c));
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        String message = null;
+
+        switch(item.getItemId()) {
+            case R.id.deezer_instructions:
+                message = "You clicked deezer instructions";
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle("Instructions for Deezer Activity: ")
+
+                        //What is the message:
+                        .setMessage("To search:" + "\n" + "Type an artist or band name and hit search" + "\n\n" +
+                        "To favourite a song:" + "\n" +  "Long click on the song and click favourite" + "\n\n" +
+                        "To see your favourite songs:" + "\n" + "Click the favourites button at the bottom of the main page"
+                        )
+
+                        //Show the dialog
+                        .create().show();
+                break;
+            case R.id.about_deezer_api:
+                message = "You clicked deezer api";
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://developers.deezer.com/guidelines"));
+                startActivity(browserIntent);
+                break;
+            case R.id.deezer_donate:
+                message = "You clicked deezer donate";
+                break;
+        }
+
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.closeDrawer(GravityCompat.START);
+
+        Toast.makeText(this, "NavigationDrawer: " + message, Toast.LENGTH_LONG).show();
+        return false;
     }
 
     private class TrackListAdapter extends BaseAdapter {
@@ -328,12 +424,12 @@ public class DeezerActivity extends AppCompatActivity {
                 //wait for the data
                 runOnUiThread(new Runnable() {
                       @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(),
-                            "Please wait while we get your song list",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),
+                                "Please wait while we get your song list",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
                 publishProgress(20);
                 InputStream response = urlConnection.getInputStream();
 
@@ -441,7 +537,16 @@ public class DeezerActivity extends AppCompatActivity {
                     String searchedTitleTest = tracklist.get(i).getSongTitle();
                     String test = "test";
 
-                    trackListTitle.setText("Showing results for " + artistName);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            trackListTitle.setText("Showing results for " + artistName);
+                            Toast.makeText(getApplicationContext(),
+                                    "Search Completed",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    //trackListTitle.setText("Showing results for " + artistName);
                 }
 
             } catch (Exception e) {
@@ -487,13 +592,6 @@ public class DeezerActivity extends AppCompatActivity {
         String duration;
         String albumTitle;
         String coverLink;
-
-//        protected Song(String artist, String title, String duration, String albumTitle){
-//            this.artist = artist;
-//            this.title = title;
-//            this.duration = duration;
-//            this.albumTitle = albumTitle;
-//        }
 
         protected Song(String artist, String title, String duration, String albumTitle, String coverLink) {
             this.artist = artist;

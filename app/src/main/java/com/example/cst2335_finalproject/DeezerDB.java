@@ -10,7 +10,7 @@ import com.example.cst2335_finalproject.DeezerActivity.Song;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyOpener extends SQLiteOpenHelper {
+public class DeezerDB extends SQLiteOpenHelper {
 
     protected final static String DATABASE_NAME = "FavouritesDB";
     protected final static int VERSION_NUM = 1;
@@ -25,7 +25,7 @@ public class MyOpener extends SQLiteOpenHelper {
     public final static String COL_ID = "_id";
 
 
-    public MyOpener(Context ctx)
+    public DeezerDB(Context ctx)
     {
         super(ctx, DATABASE_NAME, null, VERSION_NUM);
     }
@@ -62,10 +62,13 @@ public class MyOpener extends SQLiteOpenHelper {
 
     }
 
-    public void deleteSong(Song song) {
+    public boolean deleteSong(Song song) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_NAME, SONG + "= ?" + song.getSongTitle(), null);
-
+        //db.delete(TABLE_NAME, SONG + "=" + song.getSongTitle(), null);
+        if (db.delete(TABLE_NAME, String.format("%s like '%s'", SONG, song.getSongTitle()),null) > 0) {
+            return true;
+        }
+        return false;
     }
 
 

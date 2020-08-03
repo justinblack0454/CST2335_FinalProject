@@ -2,4 +2,6 @@
     <string name="app_name">CST2335_FinalProject</string>
     <string name="searchhere">Enter artist name</string>
     <string name="searchButton">Search</string>
+    <string name="deezeropen">Open</string>
+    <string name="deezerclose">Close</string>
 </resources>
