@@ -49,10 +49,12 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -134,8 +136,14 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
         songListView.setOnItemClickListener((p, b, pos, id) -> {
             Intent nextActivity = new Intent(DeezerActivity.this, SelectedSong.class);
-            nextActivity.putExtra("song", tracklist.get(pos));
-            startActivity (nextActivity);
+
+            Bundle dataToPass = new Bundle();
+            dataToPass.putSerializable("song", tracklist.get(pos));
+            dataToPass.putParcelable("artwork", albumsCovers.get(pos));
+            nextActivity.putExtras(dataToPass);
+            startActivity(nextActivity);
+            //nextActivity.putExtra("song", tracklist.get(pos));
+            //startActivity (nextActivity);
         });
 
         /**
@@ -167,6 +175,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
                         db.insert(DeezerDB.TABLE_NAME, null, newRowValues);
                         loadDataFromDatabase();
+
                         adapter.notifyDataSetChanged();
 
 
@@ -194,6 +203,8 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
         favsButton.setOnClickListener((btn -> {
             Intent nextActivity = new Intent(DeezerActivity.this, DeezerEmptyActivity.class);
+            Bundle dataToPass = new Bundle();
+
             nextActivity.putExtra("tracklist", favourites);
             startActivity (nextActivity);
         }));
@@ -499,25 +510,27 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                     String albumTitle = foundSongAlbumDetails.getString("title");
 
                     //Album Cover
-                    String coverLink = foundSongAlbumDetails.getString("cover_small");
-                    URL albumCoverURL = new URL(coverLink);
-                    HttpURLConnection albumCoverConnection = (HttpURLConnection) albumCoverURL.openConnection();
-                    albumCoverConnection.connect();
-                    int responseCode = albumCoverConnection.getResponseCode();
+                    coverLink = foundSongAlbumDetails.getString("cover_small");
 
-                    if(responseCode == 200){
-                        albumCover = BitmapFactory.decodeStream(albumCoverConnection.getInputStream());
-                        FileOutputStream outputStream = openFileOutput( albumCover + ".png", Context.MODE_PRIVATE);
-                        albumCover.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
-                        outputStream.flush();
-                        outputStream.close();
-                    }
-
-                    String imageFilename = albumCover + ".png";
-                    FileInputStream fis = null;
-                    try {    fis = openFileInput(albumCover + ".png");   }
-                    catch (FileNotFoundException e) {    e.printStackTrace();  }
-                    bm = BitmapFactory.decodeStream(fis);
+//                    URL albumCoverURL = new URL(coverLink);
+//                    HttpURLConnection albumCoverConnection = (HttpURLConnection) albumCoverURL.openConnection();
+//                    albumCoverConnection.connect();
+//                    int responseCode = albumCoverConnection.getResponseCode();
+//
+//                    if(responseCode == 200){
+//                        albumCover = BitmapFactory.decodeStream(albumCoverConnection.getInputStream());
+//                        FileOutputStream outputStream = openFileOutput( albumCover + ".png", Context.MODE_PRIVATE);
+//                        albumCover.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
+//                        outputStream.flush();
+//                        outputStream.close();
+//                    }
+//
+//                    String imageFilename = albumCover + ".png";
+//                    FileInputStream fis = null;
+//                    try {    fis = openFileInput(albumCover + ".png");   }
+//                    catch (FileNotFoundException e) {    e.printStackTrace();  }
+//                    bm = BitmapFactory.decodeStream(fis);
+                    bm = findAlbumCover(coverLink);
                     albumsCovers.add(bm);
 
                     //Song Details
@@ -547,6 +560,8 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                         }
                     });
                     //trackListTitle.setText("Showing results for " + artistName);
+
+
                 }
 
             } catch (Exception e) {
@@ -580,6 +595,43 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
             trackListTitle.setVisibility(View.VISIBLE);
 
         }
+    }
+
+    public Bitmap findAlbumCover(String coverLink) {
+        Bitmap artwork = null;
+        try {
+            URL albumCoverURL = new URL(coverLink);
+            HttpURLConnection albumCoverConnection = (HttpURLConnection) albumCoverURL.openConnection();
+            albumCoverConnection.connect();
+            int responseCode = albumCoverConnection.getResponseCode();
+
+            if (responseCode == 200) {
+                albumCover = BitmapFactory.decodeStream(albumCoverConnection.getInputStream());
+                FileOutputStream outputStream = openFileOutput(albumCover + ".png", Context.MODE_PRIVATE);
+                albumCover.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
+                outputStream.flush();
+                outputStream.close();
+            }
+
+            String imageFilename = albumCover + ".png";
+            FileInputStream fis = null;
+            try {
+                fis = openFileInput(albumCover + ".png");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            artwork = BitmapFactory.decodeStream(fis);
+
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
+        return artwork;
     }
 
     /**

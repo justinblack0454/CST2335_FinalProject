@@ -1,10 +1,9 @@
 package com.example.cst2335_finalproject;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.cst2335_finalproject.DeezerActivity.Song;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -39,7 +30,7 @@ public class DeezerDetailsFragment extends Fragment {
     private Bundle dataFromActivity;
     ArrayList<Song> tracklist = null;
     Bitmap bm;
-    List<Bitmap> albumsCovers = new ArrayList<>();
+    ArrayList<Bitmap> albumsCovers;
     private long id;
     int isSend;
     private AppCompatActivity parentActivity;
@@ -61,6 +52,7 @@ public class DeezerDetailsFragment extends Fragment {
         tracklist = db.getAll();
 
         dataFromActivity = getArguments();
+        albumsCovers = dataFromActivity.getParcelableArrayList("covers");
 
         // Inflate the layout for this fragment
         View result =  inflater.inflate(R.layout.fragment_deezer_details, container, false);
@@ -135,16 +127,17 @@ public class DeezerDetailsFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            DeezerActivity.Song song = (DeezerActivity.Song) getItem(position);
+            Song song = (Song) getItem(position);
             //Bitmap cover = albumsCovers.get(position);
+
             LayoutInflater inflater = getLayoutInflater();
             View newView = inflater.inflate(R.layout.searchedsong, parent, false);
 
             TextView songInfo = newView.findViewById(R.id.songDetails);
             songInfo.setText(song.getSongTitle());
 
-//            ImageView coverInfo = newView.findViewById((R.id.albumImage));
-//            coverInfo.setImageBitmap(cover);
+            ImageView coverInfo = newView.findViewById((R.id.albumImage));
+            coverInfo.setImageBitmap(albumsCovers.get(position));
 
             return newView;
         }
