@@ -13,4 +13,7 @@
     <string name="geo">Choice 1</string>
     <string name="deezer">Choice 2</string>
     <string name="soccer">Choice 3</string>
+    <string name="open">Open </string>
+    <string name="close">Close </string>
+    <string name="lyricsforfragment">Click on Lyrics Button to get lyrics for this song instantly! </string>
 </resources>

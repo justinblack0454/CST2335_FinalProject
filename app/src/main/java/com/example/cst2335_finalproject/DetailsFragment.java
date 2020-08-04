@@ -2,6 +2,8 @@ package com.example.cst2335_finalproject;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,13 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,18 +36,22 @@ public class DetailsFragment extends Fragment {
     private Bundle dataFromActivity;
     TextView messagehere;
     TextView id;
+
     private AppCompatActivity parentActivity;
+    Button lyricsit;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
 
         long id1;
+        String lyrics1;
         Button hide;
         dataFromActivity = getArguments();
         id1 = dataFromActivity.getLong(SongLyricsActivity.ITEM_ID );
-        View result =  inflater.inflate(R.layout.frament_lyricsdetails, container, false);
 
+        View result =  inflater.inflate(R.layout.frament_lyricsdetails, container, false);
+        String url = "https://api.lyrics.ovh/v1/" + dataFromActivity.getString(SongLyricsActivity.ITEM_ARTIST) + "/" + dataFromActivity.getString(SongLyricsActivity.ITEM_TITLE);
         messagehere=(TextView) result.findViewById(R.id.messagehere);
         messagehere.setText("Your Favourite song Details is here!\n"+dataFromActivity.getString(SongLyricsActivity.ITEM_TITLE)+" by "+dataFromActivity.getString(SongLyricsActivity.ITEM_ARTIST));
         id=(TextView) result.findViewById(R.id.id);
@@ -46,8 +59,18 @@ public class DetailsFragment extends Fragment {
 
 
 
-        //setArguments(dataFromActivity);
 
+        //setArguments(dataFromActivity);
+        lyricsit= (Button)result.findViewById(R.id.lyricsit);
+        lyricsit.setOnClickListener( clk -> {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setData(Uri.parse("https://api.lyrics.ovh/v1/" + dataFromActivity.getString(SongLyricsActivity.ITEM_ARTIST) + "/" + dataFromActivity.getString(SongLyricsActivity.ITEM_TITLE)));
+            intent.toString();
+            startActivity(intent);
+
+                });
         hide= (Button)result.findViewById(R.id.hide);
         hide.setOnClickListener( clk -> {
             Toast.makeText(parentActivity.getApplicationContext(),

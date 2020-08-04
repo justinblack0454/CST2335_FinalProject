@@ -21,6 +21,12 @@
         android:layout_height="wrap_content"
         android:text="@string/id"
         android:textSize="20dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lyricsforfragment"
+        android:id="@+id/lyricsforfragment"
+        android:textSize="20dp"/>
 
 
 
@@ -29,13 +35,21 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         >
+        <Button
+            android:id="@+id/lyricsit"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:text="lyrics"
+            android:layout_marginTop="300dp"/>
         <Button
             android:id="@+id/hide"
             android:layout_width="400dp"
             android:layout_height="wrap_content"
             android:text="@string/downbotton"
-            android:layout_marginTop="450dp">
+
+            >
 
 
         </Button>

@@ -4,9 +4,15 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
+    <item
+        android:id="@+id/action_search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:icon="@android:drawable/ic_search_category_default"
+        app:showAsAction="always|collapseActionView"
+        android:title="Search" />
+
     <item android:id="@+id/geo"
         android:orderInCategory="50"
-        app:actionViewClass="android.widget.SearchView"
         android:icon="@drawable/geo"
         app:showAsAction="always"
         android:title="@string/geo"/>
@@ -29,7 +35,7 @@
 
     <item android:id="@+id/about"
 
-        android:orderInCategory="75"
+        android:orderInCategory="500"
         app:showAsAction="never"
         android:title="About this project"/>
 </menu>

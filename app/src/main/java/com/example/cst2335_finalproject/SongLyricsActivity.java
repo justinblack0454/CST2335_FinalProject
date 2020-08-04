@@ -10,6 +10,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -20,9 +23,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.w3c.dom.Text;
@@ -36,23 +44,26 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class SongLyricsActivity extends AppCompatActivity {
+public class SongLyricsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     EditText searchartist;
     EditText searchtitle;
     ProgressBar progressBar;
     String songListUrl;
+    EditText donate;
     ListView songLyricsListView;
     Button search;
     private TextView titlename;
     TextView trackListTitle;
     SQLiteDatabase db;
     Button save;
+    Toolbar tBar;
     Button help;
     Button lyrics;
     public static final String ITEM_TITLE = "TITLE";
     public static final String  ITEM_ARTIST= "ARTIST";
     public static final String ITEM_POSITION = "POSITION";
     public static final String ITEM_ID = "ID";
+    public static final String ITEM_LYRICS="LYRICS";
     ArrayList<SongLyrics> songLyricsList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +79,19 @@ public class SongLyricsActivity extends AppCompatActivity {
         lyrics = findViewById(R.id.searchlyricsnow);
         boolean isTablet = findViewById(R.id.frame) != null;
         songLyricsListView= (ListView)findViewById(R.id.songlyricsList);
+
+        tBar = (Toolbar)findViewById(R.id.ToolBarLyrics);
+
+        setSupportActionBar(tBar);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+                drawer, tBar, R.string.open, R.string.close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener((NavigationView.OnNavigationItemSelectedListener) this);
+
         loadDataFromDatabase();
 
 
@@ -153,7 +177,7 @@ public class SongLyricsActivity extends AppCompatActivity {
         help.setOnClickListener(e->{
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
-            alertDialogBuilder.setTitle("Here are some instructions").setMessage("To save your favourite song and artist,  click SAVE\nTo get the song on Google, click SEARCH \nTo delete a song, long press on the song from the list\nTo get details of the click on the song from your list")
+            alertDialogBuilder.setTitle("Here are some instructions").setMessage("To save your favourite song and artist,  click SAVE\nTo get the song on Google, click GOOGLE \nTo get the lyrics without saving the song click LYRICS\nTo delete a song, long press on the song from the list\nTo get details of the song and its lyrics click on the song from your list\nTo go to other activity choose from the above Toolbar options\nTo donate to our project; go to the left drawer for options.")
 
                     .setNegativeButton("Close", (click, arg) -> {
                     })
@@ -202,6 +226,7 @@ public class SongLyricsActivity extends AppCompatActivity {
             dataToPass.putInt(ITEM_POSITION, position);
             dataToPass.putLong(ITEM_ID, id);
 
+
             if(isTablet)
             {
                 DetailsFragment dFragment = new DetailsFragment(); //add a DetailFragment
@@ -220,6 +245,99 @@ public class SongLyricsActivity extends AppCompatActivity {
 
 
         });
+    }
+
+    @Override
+    public boolean onNavigationItemSelected( MenuItem item) {
+
+
+        switch(item.getItemId())
+        {
+            case R.id.api:
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://lyricsovh.docs.apiary.io/#"));
+                startActivity(intent);
+                break;
+            case R.id.instructions:
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+                alertDialogBuilder.setTitle("Instructions for this app").setMessage("To save your favourite song and artist,  click SAVE\nTo get the song on Google, click GOOGLE \nTo get the lyrics without saving the song click LYRICS\nTo delete a song, long press on the song from the list\nTo get details of the song and its lyrics click on the song from your list\nTo go to other activity choose from the above Toolbar options\nTo donate to our project; go to the left drawer for options.")
+                        .setNegativeButton("Close", (click, arg) -> {
+                        })
+                        .create().show();
+                    return true;
+
+            case R.id.donate:
+                AlertDialog.Builder alertDialogBuilderr = new AlertDialog.Builder(this);
+
+                alertDialogBuilderr.setTitle("Please give generously").setMessage("How much money do you want to donate?");
+                final EditText input = new EditText(this);
+                input.setHint("$$$");
+                alertDialogBuilderr.setView(input);
+                        alertDialogBuilderr.setPositiveButton("Thank you" ,(click, arg) -> {
+
+            })
+                        .setNegativeButton("Cancel", (click, arg) -> {
+                        })
+                        .create().show();
+                return true;
+                    }
+
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.closeDrawer(GravityCompat.START);
+
+
+        return true;
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_songlyrics_menu, menu);
+
+
+	    /* slide 15 material:
+	    MenuItem searchItem = menu.findItem(R.id.search_item);
+        SearchView sView = (SearchView)searchItem.getActionView();
+        sView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }  });
+	    */
+
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String message = null;
+        //Look at your menu XML file. Put a case for every id in that file:
+        switch(item.getItemId())
+        {
+            //what to do when the menu item is selected:
+            case R.id.geo:
+                Intent goToGeo = new Intent(SongLyricsActivity.this, SongLyricsActivity.class);
+                startActivity(goToGeo);
+                break;
+            case R.id.deezer:
+                Intent goToDeezer = new Intent(SongLyricsActivity.this, DeezerActivity.class);
+                startActivity(goToDeezer);
+                break;
+            case R.id.soccer:
+                Intent goToSoccer = new Intent(SongLyricsActivity.this, SongLyricsActivity.class);
+                startActivity(goToSoccer);
+                break;
+            case R.id.about:
+                Toast.makeText(this, "This is the Lyrics Search activity, written by Aahuti Patel", Toast.LENGTH_LONG).show();
+                break;
+        }
+
+        return true;
     }
 
     public void loadDataFromDatabase () {
@@ -249,21 +367,6 @@ public class SongLyricsActivity extends AppCompatActivity {
     }
 
 
-//    protected void printCursor (Cursor c,int version){
-//        Cursor d = db.rawQuery("SELECT * from " + SongLyricsDatabase.TABLE_NAME, null);
-//        int colIndex = d.getColumnIndex("Messages");
-//        db.getVersion();
-//        Log.d("Columns", "Number of Columns:" + d.getColumnCount());
-//        Log.d("name", "Column name:" + d.getColumnName(colIndex));
-//        Log.d("rows", "Number of Rows:" + d.getCount());
-//        for (int i = 0; i < d.getCount(); i++) {
-//            String fn = d.getString(colIndex);
-//            Log.d("messages", "Message: " + fn);
-//            d.moveToNext();
-//
-//        }
-//
-//    }
 
 
 
