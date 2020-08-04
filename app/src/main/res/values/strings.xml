@@ -1,5 +1,16 @@
 <resources>
     <string name="app_name">CST2335_FinalProject</string>
     <string name="searchhere">Enter artist name</string>
-    <string name="searchButton">Search</string>
+    <string name="searchButton">Google</string>
+    <string name="searchtitle">Enter song title</string>
+    <string name="searchartist">Enter artist name</string>
+    <string name="saveButton">Save</string>
+    <string name="helpLyrics">Help</string>
+    <string name="hello_blank_fragment">Your Favourite Song Details</string>
+    <string name="id">ID: </string>
+    <string name="downbotton">Hide</string>
+    <string name="saveit">Lyrics</string>
+    <string name="geo">Choice 1</string>
+    <string name="deezer">Choice 2</string>
+    <string name="soccer">Choice 3</string>
 </resources>
