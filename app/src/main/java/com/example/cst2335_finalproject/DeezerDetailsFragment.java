@@ -1,6 +1,7 @@
 package com.example.cst2335_finalproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -28,7 +29,7 @@ public class DeezerDetailsFragment extends Fragment {
 
     DeezerDB db;
     private Bundle dataFromActivity;
-    ArrayList<Song> tracklist = null;
+    ArrayList<Song> tracklist = new ArrayList<>();
     Bitmap bm;
     ArrayList<Bitmap> albumsCovers;
     private long id;
@@ -47,6 +48,7 @@ public class DeezerDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        albumsCovers = new ArrayList<>();
         db = new DeezerDB(getContext());
         db.getWritableDatabase();
         tracklist = db.getAll();
@@ -65,6 +67,17 @@ public class DeezerDetailsFragment extends Fragment {
         ListView favsView = (ListView)result.findViewById(R.id.favView);
         favsView.setAdapter(adapter = new TrackListAdapter());
 
+        favsView.setOnItemClickListener((p, b, pos, id) -> {
+            Intent nextActivity = new Intent(getActivity(), SelectedSong.class);
+
+            Bundle dataToPass = new Bundle();
+            dataToPass.putSerializable("song", tracklist.get(pos));
+            dataToPass.putParcelable("artwork", albumsCovers.get(pos));
+            nextActivity.putExtras(dataToPass);
+            startActivity(nextActivity);
+
+        });
+
         favsView.setOnItemLongClickListener( (p, b, pos, id) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
             Song song = tracklist.get(pos);
@@ -81,8 +94,9 @@ public class DeezerDetailsFragment extends Fragment {
 
                     .setNegativeButton("Delete song", (click, arg) -> {
                         db.deleteSong(song);
-                        //albumsCovers.remove(pos);
-                        tracklist = db.getAll();
+                        albumsCovers.remove(pos);
+                        tracklist.remove(pos);
+                        //tracklist = db.getAll();
                         adapter.notifyDataSetChanged();
 
 
@@ -98,6 +112,7 @@ public class DeezerDetailsFragment extends Fragment {
         Button hideButton = (Button)result.findViewById(R.id.hideButton);
         hideButton.setOnClickListener(btn -> {
             parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
+            albumsCovers.clear();
             getActivity().finish();
         });
 
@@ -137,7 +152,7 @@ public class DeezerDetailsFragment extends Fragment {
             songInfo.setText(song.getSongTitle());
 
             ImageView coverInfo = newView.findViewById((R.id.albumImage));
-            coverInfo.setImageBitmap(albumsCovers.get(position));
+            //coverInfo.setImageBitmap(albumsCovers.get(position));
 
             return newView;
         }

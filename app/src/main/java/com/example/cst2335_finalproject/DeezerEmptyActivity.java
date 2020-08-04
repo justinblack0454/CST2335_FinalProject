@@ -25,30 +25,37 @@ import java.util.List;
 public class DeezerEmptyActivity extends AppCompatActivity {
 
     Bitmap albumCover;
-    ArrayList<Bitmap> albumCovers = new ArrayList<>();
+    ArrayList<Bitmap> albumCovers;
     ArrayList<Song> tracklist;
     Bitmap artwork;
+    DeezerDB db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_empty_deezer);
 
-        Bundle dataToPass = new Bundle();
-        tracklist = (ArrayList<Song>) getIntent().getSerializableExtra("tracklist");
+        tracklist = new ArrayList<>();
+        db = new DeezerDB(this);
+        db.getWritableDatabase();
+        tracklist = db.getAll();
+        albumCovers = new ArrayList<>();
 
         CoverQuery coverQuery = new CoverQuery();
         coverQuery.execute();
 
+        Bundle dataToPass = new Bundle();
+        tracklist = (ArrayList<Song>) getIntent().getSerializableExtra("tracklist");
+
         dataToPass.putParcelableArrayList("covers", albumCovers);
         //dataToPass.putSerializable("tracklist", tracklist);
-
         DeezerDetailsFragment aFragment = new DeezerDetailsFragment();
         aFragment.setArguments(dataToPass);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentLocation, aFragment)
                 . commit();
+
     }
 
     private class CoverQuery extends AsyncTask<String, Integer, String> {
@@ -91,5 +98,17 @@ public class DeezerEmptyActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        albumCovers.clear();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tracklist = db.getAll();
     }
 }

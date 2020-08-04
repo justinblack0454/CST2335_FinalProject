@@ -65,7 +65,7 @@ public class DeezerDB extends SQLiteOpenHelper {
     public boolean deleteSong(Song song) {
         SQLiteDatabase db = this.getWritableDatabase();
         //db.delete(TABLE_NAME, SONG + "=" + song.getSongTitle(), null);
-        if (db.delete(TABLE_NAME, String.format("%s like '%s'", SONG, song.getSongTitle()),null) > 0) {
+        if (db.delete(TABLE_NAME, String.format("%s like \"%s\"", SONG, song.getSongTitle()),null) > 0) {
             return true;
         }
         return false;

@@ -68,17 +68,15 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
     ArrayList<Song> tracklist = new ArrayList<>();
     ArrayList<Song> favourites = new ArrayList<>();
     TrackListAdapter adapter;
-    Boolean isTablet;
     ImageView albumCoverView;
     SongQuery songQuery = new SongQuery();
-    //SongQuery songQuery = null;
     EditText searchField;
-    Boolean asyncCancelled;
     ProgressBar progressBar;
     String songListUrl;
     TextView trackListTitle;
     Bitmap albumCover = null;
     List<Bitmap> albumsCovers = new ArrayList<>();
+    List<Bitmap> favSongArt = new ArrayList<>();
     private SharedPreferences prefs;
     private String savedSearchString;
     SQLiteDatabase db;
@@ -94,7 +92,6 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
     public static final String COVER = "COVER";
 
     DeezerDetailsFragment aFragment;
-
     private Handler mainHandler = new Handler();
 
     @Override
@@ -104,16 +101,15 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
         albumCoverView = null;
         prefs = getSharedPreferences("FileName", Context.MODE_PRIVATE);
+        savedSearchString = prefs.getString("ReserveName", null);
         trackListTitle = findViewById(R.id.artistName);
         progressBar = findViewById(R.id.deezerProgressBar);
         searchField = findViewById(R.id.searchField);
         Button searchButton = findViewById(R.id.searchButton);
         Button favsButton = findViewById(R.id.favsButton);
         SongQuery songQuery = new SongQuery();
-        //songQuery.execute("https://api.deezer.com/search/artist/?q=paramore&output=xml");
         searchField.setText(savedSearchString);
-        //saveSharedPrefs(searchField.getText().toString());
-        loadDataFromDatabase();
+        //loadDataFromDatabase();
 
         //This gets the toolbar from the layout:
         Toolbar tBar = (Toolbar)findViewById(R.id.toolbar);
@@ -174,7 +170,8 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                         newRowValues.put(DeezerDB.COVER, song.getAlbumCover());
 
                         db.insert(DeezerDB.TABLE_NAME, null, newRowValues);
-                        loadDataFromDatabase();
+                        favSongArt.add(albumsCovers.get(pos));
+                        //loadDataFromDatabase();
 
                         adapter.notifyDataSetChanged();
 
@@ -193,6 +190,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         Snackbar comingSoon = Snackbar.make(findViewById(R.id.searchButton),
                 "search functionality coming soon",
                 Snackbar.LENGTH_LONG);
+
         searchButton.setOnClickListener(btn -> {
             //comingSoon.show();
             artistName = searchField.getText().toString();
@@ -204,8 +202,9 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         favsButton.setOnClickListener((btn -> {
             Intent nextActivity = new Intent(DeezerActivity.this, DeezerEmptyActivity.class);
             Bundle dataToPass = new Bundle();
+            dataToPass.putSerializable("tracklist", favourites);
 
-            nextActivity.putExtra("tracklist", favourites);
+            nextActivity.putExtras(dataToPass);
             startActivity (nextActivity);
         }));
     }
@@ -214,20 +213,21 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
     protected void onPause(){
         super.onPause();
         savedSearchString = searchField.getText().toString();
-        saveSharedPrefs(savedSearchString);
+        saveSharedPrefs(searchField.getText().toString());
     }
 
     @Override
     protected void onStop(){
         super.onStop();
         savedSearchString = searchField.getText().toString();
-        saveSharedPrefs(savedSearchString);
+        saveSharedPrefs(searchField.getText().toString());
     }
 
     @Override
     protected void onResume(){
         super.onResume();
         searchField.setText(savedSearchString);
+        loadDataFromDatabase();
     }
 
     @Override
@@ -249,20 +249,6 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.deezer_menu, menu);
-
-
-	    /* slide 15 material:
-	    MenuItem searchItem = menu.findItem(R.id.search_item);
-        SearchView sView = (SearchView)searchItem.getActionView();
-        sView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-            }
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }  });
-	    */
 
         return true;
     }
@@ -300,7 +286,6 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
     private void loadDataFromDatabase() {
         DeezerDB dbOpener = new DeezerDB(this);
         db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
-        //db.execSQL("DROP TABLE " + MyOpener.TABLE_NAME);
 
 
         // We want to get all of the columns. Look at MyOpener.java for the definitions:
@@ -317,6 +302,8 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         int coverColIndex = results.getColumnIndex(DeezerDB.COVER);
         int idColIndex = results.getColumnIndex(DeezerDB.COL_ID);
 
+        if(favourites.size() > 0)
+            favourites.clear();
         //iterate over the results, return true if there is a next item:
         while(results.moveToNext())
         {
@@ -327,8 +314,9 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
             String coverLink = results.getString(coverColIndex);
             long id = results.getLong(idColIndex);
 
-            //add the new Contact to the array list:
+            //add the songs to the array list:
             favourites.add(new Song(artist, song, duration, album, coverLink));
+
         }
 
         //At this point, the contactsList array has loaded every row from the cursor.
@@ -393,7 +381,6 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         }
 
         @Override
-        //last week we returned (long) position. Now we return the object's database id that we get from line 71
         public long getItemId(int position)
         {
             return  tracklist.get(position).getId();
@@ -511,57 +498,31 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
                     //Album Cover
                     coverLink = foundSongAlbumDetails.getString("cover_small");
-
-//                    URL albumCoverURL = new URL(coverLink);
-//                    HttpURLConnection albumCoverConnection = (HttpURLConnection) albumCoverURL.openConnection();
-//                    albumCoverConnection.connect();
-//                    int responseCode = albumCoverConnection.getResponseCode();
-//
-//                    if(responseCode == 200){
-//                        albumCover = BitmapFactory.decodeStream(albumCoverConnection.getInputStream());
-//                        FileOutputStream outputStream = openFileOutput( albumCover + ".png", Context.MODE_PRIVATE);
-//                        albumCover.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
-//                        outputStream.flush();
-//                        outputStream.close();
-//                    }
-//
-//                    String imageFilename = albumCover + ".png";
-//                    FileInputStream fis = null;
-//                    try {    fis = openFileInput(albumCover + ".png");   }
-//                    catch (FileNotFoundException e) {    e.printStackTrace();  }
-//                    bm = BitmapFactory.decodeStream(fis);
                     bm = findAlbumCover(coverLink);
                     albumsCovers.add(bm);
 
                     //Song Details
                     String songTitle = foundSong.getString("title");
-                    //int rank = foundSong.getInt("rank");
                     int durationInSeconds = foundSong.getInt("duration");
                     int minute = durationInSeconds / 60;
                     int second = durationInSeconds % 60;
                     String duration = minute + "min " + second + "sec";
 
-                    //int tester = foundSong.getInt("explicit_content_lyrics");
                     publishProgress(80);
-
 
                     Song song = new Song(artistName, songTitle, duration, albumTitle, coverLink);
                     tracklist.add(song);
-                    String searchedTitleTest = tracklist.get(i).getSongTitle();
-                    String test = "test";
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             trackListTitle.setText("Showing results for " + artistName);
-                            Toast.makeText(getApplicationContext(),
-                                    "Search Completed",
-                                    Toast.LENGTH_LONG).show();
+//                            Toast.makeText(getApplicationContext(),
+//                                    "Search Completed",
+//                                    Toast.LENGTH_SHORT).show();
                         }
+
                     });
-                    //trackListTitle.setText("Showing results for " + artistName);
-
-
                 }
 
             } catch (Exception e) {
@@ -590,7 +551,6 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         public void onPostExecute(String fromDoInBackground)
         {
             searchField.setText(artistName);
-            //albumCoverView.setImageBitmap(bm);
             progressBar.setVisibility(View.INVISIBLE);
             trackListTitle.setVisibility(View.VISIBLE);
 
@@ -613,7 +573,6 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                 outputStream.close();
             }
 
-            String imageFilename = albumCover + ".png";
             FileInputStream fis = null;
             try {
                 fis = openFileInput(albumCover + ".png");
