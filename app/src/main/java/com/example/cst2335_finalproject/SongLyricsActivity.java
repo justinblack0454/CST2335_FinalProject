@@ -177,7 +177,7 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
         help.setOnClickListener(e->{
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
-            alertDialogBuilder.setTitle("Here are some instructions").setMessage("To save your favourite song and artist,  click SAVE\nTo get the song on Google, click GOOGLE \nTo get the lyrics without saving the song click LYRICS\nTo delete a song, long press on the song from the list\nTo get details of the song and its lyrics click on the song from your list\nTo go to other activity choose from the above Toolbar options\nTo donate to our project; go to the left drawer for options.")
+            alertDialogBuilder.setTitle("Here are some instructions").setMessage("To save your favourite song and artist,  click SAVE\nTo get the song on Google, click GOOGLE \nTo get the lyrics without saving the song click LYRICS\n To delete a song, long press on the song from the list\nTo get details of the song and its lyrics click on the song from your list\nTo go to other activity choose from the above Toolbar options\nTo donate to our project; go to the left drawer for options.")
 
                     .setNegativeButton("Close", (click, arg) -> {
                     })
