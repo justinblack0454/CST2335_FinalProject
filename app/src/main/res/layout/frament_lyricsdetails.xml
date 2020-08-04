@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetailsFragment"
+    android:orientation="vertical">
+
+
+
+    <TextView
+        android:id="@+id/messagehere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hello_blank_fragment"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:id="@+id/id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/id"
+        android:textSize="20dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lyricsforfragment"
+        android:id="@+id/lyricsforfragment"
+        android:textSize="20dp"/>
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <Button
+            android:id="@+id/lyricsit"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:text="lyrics"
+            android:layout_marginTop="300dp"/>
+        <Button
+            android:id="@+id/hide"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:text="@string/downbotton"
+
+            >
+
+
+        </Button>
+    </LinearLayout>
+
+
+</LinearLayout>

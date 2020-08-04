@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <item
+        android:id="@+id/action_search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:icon="@android:drawable/ic_search_category_default"
+        app:showAsAction="always|collapseActionView"
+        android:title="Search" />
+
+    <item android:id="@+id/geo"
+        android:orderInCategory="50"
+        android:icon="@drawable/geo"
+        app:showAsAction="always"
+        android:title="@string/geo"/>
+
+    <item android:id="@+id/deezer"
+        android:title="@string/deezer"
+        android:icon="@drawable/deezer"
+        android:orderInCategory="100"
+        app:showAsAction="always"/>  <!-- This uses showAsAction=always, so look at icon= parameter -->
+
+
+    <!-- This uses showAsAction=always, so look at icon= parameter -->
+
+
+    <item android:id="@+id/soccer"
+        android:icon="@drawable/soccer"
+        android:title="@string/soccer"
+        app:showAsAction="always"
+        android:orderInCategory="400"/> <!-- This uses showAsAction=never, so look at title= parameter -->
+
+    <item android:id="@+id/about"
+
+        android:orderInCategory="500"
+        app:showAsAction="never"
+        android:title="About this project"/>
+</menu>
