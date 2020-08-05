@@ -35,6 +35,7 @@
     <string name="deezer_resultstitle">Résultats pour </string>
     <string name="deezer_deletebutton">Effacer la chanson</string>
     <string name="deezer_favstitle">Vos favoris:</string>
+    <string name="deezer_notfoundmsg">Artiste introuvbale</string>
 
 
 </resources>

@@ -198,6 +198,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
             //comingSoon.show();
             artistName = searchField.getText().toString();
             tracklist.clear();
+            albumsCovers.clear(); //TODO double check if this messes anything else up
             new SongQuery().execute("https://api.deezer.com/search/artist/?q=" + searchField.getText().toString().replace(" ", "") + "&output=xml");
             saveSharedPrefs(searchField.getText().toString());
         });
@@ -426,6 +427,8 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
             ImageView coverInfo = newView.findViewById((R.id.albumImage));
             coverInfo.setImageBitmap(cover);
 
+            adapter.notifyDataSetChanged(); //TODO test this everywhere to make sure
+
             return newView;
         }
     }
@@ -467,9 +470,24 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                 //the parse is currently at START_DOCUMENT
                 int eventType = xpp.getEventType();
                 Boolean artistFound = false;
+                Boolean noResults = false;
 
+                //tests if there are no results first - no results is when the total tag is null
                 while(artistFound.equals(false)) {
                     if (eventType == XmlPullParser.START_TAG) {
+                        if(xpp.getName().equals("total")) {
+                            String totalText = xpp.getText();
+                            if(xpp.getText() == null) {
+                                noResults = true;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        trackListTitle.setText(getString(R.string.deezer_notfoundmsg));
+                                    }
+                                });
+                            }
+                                break;
+                        }
                         if (xpp.getName().equals("tracklist")) {
                             eventType = xpp.next();
                             if (eventType == XmlPullParser.TEXT) {
@@ -482,74 +500,75 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                 }
                 publishProgress(40);
 
-                URL iconUrl = new URL(songListUrl);
-                HttpURLConnection songListConnection = (HttpURLConnection) iconUrl.openConnection();
-                songListConnection.connect();
+                //only proceeds if artist is found
+                if(artistFound.equals(true)) {
+                    URL iconUrl = new URL(songListUrl);
+                    HttpURLConnection songListConnection = (HttpURLConnection) iconUrl.openConnection();
+                    songListConnection.connect();
 
-                InputStream songListResponse = songListConnection.getInputStream();
+                    InputStream songListResponse = songListConnection.getInputStream();
 
-                publishProgress(60);
+                    publishProgress(60);
 
-                //JSON reading:
-                //Build the entire string response:
-                BufferedReader reader = new BufferedReader(new InputStreamReader(songListResponse, "UTF-8"), 8);
-                StringBuilder sb = new StringBuilder();
+                    //JSON reading:
+                    //Build the entire string response:
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(songListResponse, "UTF-8"), 8);
+                    StringBuilder sb = new StringBuilder();
 
-                String line = null;
-                while ((line = reader.readLine()) != null)
-                {
-                    sb.append(line + "\n");
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    String result = sb.toString(); //result is the whole string
+
+
+                    // convert string to JSON: Look at slide 27:
+                    JSONObject songListReport = new JSONObject(result);
+
+                    JSONArray songList = songListReport.getJSONArray("data");
+
+                    for (int i = 0; i < songList.length(); i++) {
+                        JSONObject foundSong = songList.getJSONObject(i);
+
+                        //Getting the nested album details
+                        JSONObject foundSongAlbumDetails = foundSong.getJSONObject("album");
+                        JSONObject foundSongArtistDetails = foundSong.getJSONObject("artist");
+
+                        //Artist Details
+                        //int artistID = foundSongArtistDetails.getInt("id");
+                        String artistName = foundSongArtistDetails.getString("name");
+
+                        //Album Details
+                        //int albumID = foundSongAlbumDetails.getInt("id");
+                        String albumTitle = foundSongAlbumDetails.getString("title");
+
+                        //Album Cover
+                        coverLink = foundSongAlbumDetails.getString("cover_small");
+                        bm = findAlbumCover(coverLink);
+                        albumsCovers.add(bm);
+
+                        //Song Details
+                        String songTitle = foundSong.getString("title");
+                        int durationInSeconds = foundSong.getInt("duration");
+                        int minute = durationInSeconds / 60;
+                        int second = durationInSeconds % 60;
+                        String duration = minute + "min " + second + "sec";
+
+                        publishProgress(80);
+
+                        Song song = new Song(artistName, songTitle, duration, albumTitle, coverLink);
+                        tracklist.add(song);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                trackListTitle.setText(getString(R.string.deezer_resultstitle) + " " + artistName);
+
+                            }
+
+                        });
+                    }
                 }
-                String result = sb.toString(); //result is the whole string
-
-
-                // convert string to JSON: Look at slide 27:
-                JSONObject songListReport = new JSONObject(result);
-
-                JSONArray songList = songListReport.getJSONArray("data");
-
-                for(int i = 0; i < songList.length(); i++) {
-                    JSONObject foundSong = songList.getJSONObject(i);
-
-                    //Getting the nested album details
-                    JSONObject foundSongAlbumDetails = foundSong.getJSONObject("album");
-                    JSONObject foundSongArtistDetails = foundSong.getJSONObject("artist");
-
-                    //Artist Details
-                    //int artistID = foundSongArtistDetails.getInt("id");
-                    String artistName = foundSongArtistDetails.getString("name");
-
-                    //Album Details
-                    //int albumID = foundSongAlbumDetails.getInt("id");
-                    String albumTitle = foundSongAlbumDetails.getString("title");
-
-                    //Album Cover
-                    coverLink = foundSongAlbumDetails.getString("cover_small");
-                    bm = findAlbumCover(coverLink);
-                    albumsCovers.add(bm);
-
-                    //Song Details
-                    String songTitle = foundSong.getString("title");
-                    int durationInSeconds = foundSong.getInt("duration");
-                    int minute = durationInSeconds / 60;
-                    int second = durationInSeconds % 60;
-                    String duration = minute + "min " + second + "sec";
-
-                    publishProgress(80);
-
-                    Song song = new Song(artistName, songTitle, duration, albumTitle, coverLink);
-                    tracklist.add(song);
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            trackListTitle.setText(getString(R.string.deezer_resultstitle) + " " + artistName);
-//
-                        }
-
-                    });
-                }
-
             } catch (Exception e) {
                 Log.e("parsing error", e.getMessage());
                 runOnUiThread(new Runnable() {
@@ -562,7 +581,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                 });
 
             }
-            //songQuery.cancel(true);
+
             return null;
         }
 
@@ -575,6 +594,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
         public void onPostExecute(String fromDoInBackground)
         {
+            adapter.notifyDataSetChanged(); //maybe here!
             searchField.setText(artistName);
             progressBar.setVisibility(View.INVISIBLE);
             trackListTitle.setVisibility(View.VISIBLE);

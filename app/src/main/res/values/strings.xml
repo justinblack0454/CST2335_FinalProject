@@ -34,5 +34,6 @@
     <string name="deezer_resultstitle">Showing results for </string>
     <string name="deezer_deletebutton">Delete song</string>
     <string name="deezer_favstitle">Your Favourites:</string>
+    <string name="deezer_notfoundmsg">Artist not found</string>
 
 </resources>

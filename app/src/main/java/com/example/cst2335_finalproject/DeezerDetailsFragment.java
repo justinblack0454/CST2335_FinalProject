@@ -153,7 +153,6 @@ public class DeezerDetailsFragment extends Fragment {
 
             ImageView coverInfo = newView.findViewById((R.id.albumImage));
             //coverInfo.setImageBitmap(albumsCovers.get(position));
-
             return newView;
         }
     }
