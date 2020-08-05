@@ -2,6 +2,7 @@ package com.example.cst2335_finalproject;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -13,6 +14,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.renderscript.ScriptGroup;
+import android.text.InputFilter;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -171,7 +175,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
                         db.insert(DeezerDB.TABLE_NAME, null, newRowValues);
                         favSongArt.add(albumsCovers.get(pos));
-                        //loadDataFromDatabase();
+                        loadDataFromDatabase(); //TODO should work now
 
                         adapter.notifyDataSetChanged();
 
@@ -302,8 +306,10 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         int coverColIndex = results.getColumnIndex(DeezerDB.COVER);
         int idColIndex = results.getColumnIndex(DeezerDB.COL_ID);
 
+        //clearing the favourites list so the list doesn't double, triple etc...
         if(favourites.size() > 0)
             favourites.clear();
+
         //iterate over the results, return true if there is a next item:
         while(results.moveToNext())
         {
@@ -357,7 +363,34 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                 startActivity(browserIntent);
                 break;
             case R.id.deezer_donate:
+                EditText donate = new EditText(this); //TODO maybe set it to deezerDonateText
+                donate.setFilters(new InputFilter[] {
+                DigitsKeyListener.getInstance(false, true),
+                });
+                donate.setKeyListener(DigitsKeyListener.getInstance());
+
                 message = "You clicked deezer donate";
+                AlertDialog.Builder donateDialogBuilder = new AlertDialog.Builder(this);
+                donateDialogBuilder.setTitle("Donate")
+                        .setMessage("How much would you like to donate?")
+                        .setView(donate)
+                        .setPositiveButton("Thanks", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //TODO add thank you msg (snakcbar)
+                                Snackbar thanksMsg = Snackbar.make(findViewById(R.id.searchButton),
+                                        "Thank you!",
+                                        Snackbar.LENGTH_LONG);
+                                thanksMsg.show();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //TODO add cancelled msg
+                            }
+                        })
+                        .create().show();
                 break;
         }
 
