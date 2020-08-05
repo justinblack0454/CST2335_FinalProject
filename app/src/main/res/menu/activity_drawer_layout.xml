@@ -8,10 +8,10 @@
 
     <item
         android:icon="@drawable/instruction"
-        android:title="Instructions for this app"
+        android:title="@string/instructions"
         android:id="@+id/instructions" />
 
-    <item android:title="About the API"
+    <item android:title="@string/apiitis"
         android:id="@+id/api"
         android:icon="@drawable/info"
 
@@ -19,7 +19,7 @@
 
     <item android:id="@+id/donate"
         android:icon="@drawable/donate"
-        android:title="Donate to Project"
+        android:title="@string/donateit"
         />
 
 

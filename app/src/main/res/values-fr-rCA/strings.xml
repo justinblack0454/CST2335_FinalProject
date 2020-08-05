@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">CSTdeux mille deux cent trente-cinq_Projet final</string>
+    <string name="searchhere">Entrez le nom de l\'artiste</string>
+    <string name="searchButton">Google</string>
+    <string name="searchtitle">Entrez le titre de la chanson</string>
+    <string name="searchartist">Entrez le nom de l\'artiste</string>
+    <string name="saveButton">enregistrer</string>
+    <string name="helpLyrics">Aidez-moi</string>
+    <string name="hello_blank_fragment">Détails de votre chanson préférée</string>
+    <string name="id">Identité: </string>
+    <string name="downbotton">Cacher</string>
+    <string name="saveit">Paroles</string>
+    <string name="geo">Choix 1</string>
+    <string name="deezer">Choix 2</string>
+    <string name="soccer">Choix 3</string>
+    <string name="open">Ouverte </string>
+    <string name="close">Fermer </string>
+    <string name="lyricsforfragment">Cliquez sur le bouton Paroles pour obtenir les paroles de cette chanson instantanément! </string>
+    <string name="instructions">Instructions pour cette application</string>
+    <string name="apiitis">À propos de l\'API</string>
+    <string name="donateit">Faire un don au projet</string>
+</resources>

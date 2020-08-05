@@ -16,4 +16,7 @@
     <string name="open">Open </string>
     <string name="close">Close </string>
     <string name="lyricsforfragment">Click on Lyrics Button to get lyrics for this song instantly! </string>
+    <string name="instructions">Instructions for this app</string>
+    <string name="apiitis">About the API</string>
+    <string name="donateit">Donate to Project</string>
 </resources>

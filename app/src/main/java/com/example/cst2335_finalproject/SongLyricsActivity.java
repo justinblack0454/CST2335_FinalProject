@@ -44,6 +44,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+/**
+ * Main Activity for Song Lyrics Search
+ * @author Aahuti Patel-040974663
+ * @version 1.0
+ */
 public class SongLyricsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     EditText searchartist;
     EditText searchtitle;
@@ -65,6 +70,11 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
     public static final String ITEM_ID = "ID";
     public static final String ITEM_LYRICS="LYRICS";
     ArrayList<SongLyrics> songLyricsList = new ArrayList<>();
+
+    /**
+     *On Create for Lyrics Main Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,27 +104,50 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
 
         loadDataFromDatabase();
 
-
+/**
+ * Adapter Class for Song Lyrics
+ * @author Aahuti Patel-040974663
+ * @version 1.0
+ */
          class SongLyricsList extends BaseAdapter {
 
-
+             /**
+              *
+              * @return int
+              */
             @Override
             public int getCount() {
                 return songLyricsList.size();
             }
 
+             /**
+              *
+              * @param position
+              * @return SongLyrics
+              */
             @Override
             public SongLyrics getItem(int position) {
                 return songLyricsList.get(position);
             }
 
+             /**
+              *
+              * @param position
+              * @return long
+              */
             @Override
             public long getItemId(int position) {
                 return getItem(position).getId();
 
             }
 
-
+             /**
+              *
+              * @param position
+              * @param convertView
+              * @param parent
+              * @return View
+              */
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 SongLyrics songLyricsObj = (SongLyrics) getItem(position);
@@ -133,7 +166,10 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
         songLyricsListView.setAdapter(myAdapter);
         search.setOnClickListener(new View.OnClickListener(){
 
-
+            /**
+             *
+             * @param v
+             */
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
@@ -247,6 +283,11 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
         });
     }
 
+    /**
+     *
+     * @param item
+     * @return boolean
+     */
     @Override
     public boolean onNavigationItemSelected( MenuItem item) {
 
@@ -291,28 +332,26 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
 
         return true;
     }
+
+    /**
+     *
+     * @param menu
+     * @return boolean
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_songlyrics_menu, menu);
 
-
-	    /* slide 15 material:
-	    MenuItem searchItem = menu.findItem(R.id.search_item);
-        SearchView sView = (SearchView)searchItem.getActionView();
-        sView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-            }
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }  });
-	    */
-
         return true;
     }
+
+    /**
+     *
+     * @param item
+     * @return boolean
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         String message = null;
@@ -340,6 +379,9 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
         return true;
     }
 
+    /**
+     * loads database
+     */
     public void loadDataFromDatabase () {
         //get a database connection:
         SongLyricsDatabase dbOpener = new SongLyricsDatabase(this);
@@ -362,24 +404,28 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
 
     }
 
+    /**
+     * deletes message from database
+     * @param selectedMessage
+     */
     private void deleteMessage(SongLyrics selectedMessage) {
         db.delete(SongLyricsDatabase.TABLE_NAME, SongLyricsDatabase.COL_ID + "= ?", new String[]{Long.toString(selectedMessage.getId())});
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * Song Lyrics Query
+     * @author Aahuti Patel-040974663
+     * @version 1.0
+     */
         private class SongLyricsQuery extends AsyncTask<String, Integer, String>{
             String parameter = null;
+
+        /**
+         *
+         * @param args
+         * @return String
+         */
         @Override
         protected String doInBackground(String ... args) {
             try {
@@ -425,11 +471,20 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
             }
         return parameter;
         }
+
+        /**
+         *
+         * @param value
+         */
         public void onProgressUpdate(Integer ...value) {
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(value[0]);
         }
 
+        /**
+         *
+         * @param fromDoInBackground
+         */
         public void onPostExecute(String fromDoInBackground)
         {
 
@@ -445,14 +500,11 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
         }}
 
 
-
-
-
-
-
-
-
-
+    /**
+     * Song Lyrics class
+     * @author Aahuti Patel-040974663
+     * @version 1.0
+     */
         private class SongLyrics {
             String title;
             int duration; //check the format of this
@@ -462,11 +514,24 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
             int explicit;
             boolean search;
 
+        /**
+         *
+         * @param search
+         * @param title
+         * @param artistName
+         */
             private SongLyrics(boolean search,String title, String artistName) {
                 this.search=search;
                 this.title = title;
                 this.artistName=artistName;
             }
+
+        /**
+         *
+         * @param id
+         * @param title
+         * @param artistName
+         */
             private SongLyrics(int id,String title, String artistName) {
                 this.id=id;
                 this.title = title;
@@ -474,39 +539,74 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
             }
 
 
-
+        /**
+         *
+         * @param title
+         */
             private void setSongTitle(String title) {
                 this.title = title;
             }
 
+        /**
+         *
+         * @return
+         */
             private String getSongTitle() {
                 return title;
             }
 
+        /**
+         *
+         * @param duration
+         */
             private void setDuration(int duration) {
                 this.duration = duration;
             }
 
+        /**
+         *
+         * @return int
+         */
             private int getDuration() {
                 return duration;
             }
 
+        /**
+         *
+         * @param artistName
+         */
             private void setArtistName(String artistName) {
                 this.artistName = artistName;
             }
 
+        /**
+         *
+         * @return String
+         */
             private String getArtistName() {
                 return artistName;
             }
 
+        /**
+         *
+         * @param id
+         */
             public void setId(long id) {
                 this.id = id;
             }
 
+        /**
+         *
+         * @return long
+         */
             public long getId() {
                 return id;
             }
 
+        /**
+         *
+         * @return int
+         */
             public int getRanking(){
                 return ranking;
             }

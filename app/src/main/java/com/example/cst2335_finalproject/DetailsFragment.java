@@ -27,9 +27,14 @@ import java.net.URLEncoder;
 
 /**
  * A simple {@link Fragment} subclass.
+ * Fragment for Lyrics Details
+ * @author Aahuti Patel-040974663
+ * @version 1.0
  */
 public class DetailsFragment extends Fragment {
-
+    /**
+     * no -arg constructor
+     */
     public DetailsFragment() {
         // Required empty public constructor
     }
@@ -39,6 +44,14 @@ public class DetailsFragment extends Fragment {
 
     private AppCompatActivity parentActivity;
     Button lyricsit;
+
+    /**
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return View
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,6 +95,11 @@ public class DetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         return result;
     }
+
+    /**
+     *
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

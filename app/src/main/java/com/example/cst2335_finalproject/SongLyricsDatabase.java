@@ -4,6 +4,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * Song Lyrics Database
+ * @author Aahuti Patel-040974663
+ * @version 1.0
+ */
 public class SongLyricsDatabase extends SQLiteOpenHelper{
 
 
@@ -15,6 +20,10 @@ public class SongLyricsDatabase extends SQLiteOpenHelper{
         public final static String COL_TITLE = "Title";
         public final static String COL_ID = "_id";
 
+    /**
+     *
+     * @param ctx
+     */
         public SongLyricsDatabase(Context ctx)
         {
             super(ctx, DATABASE_NAME, null, VERSION_NUM);
@@ -23,6 +32,11 @@ public class SongLyricsDatabase extends SQLiteOpenHelper{
 
         //This function gets called if no database file exists.
         //Look on your device in the /data/data/package-name/database directory.
+
+    /**
+     *
+     * @param db
+     */
         @Override
         public void onCreate(SQLiteDatabase db)
         {
@@ -31,6 +45,13 @@ public class SongLyricsDatabase extends SQLiteOpenHelper{
 
 
         //this function gets called if the database version on your device is lower than VERSION_NUM
+
+    /**
+     *
+     * @param db
+     * @param oldVersion
+     * @param newVersion
+     */
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
         {   //Drop the old table:
@@ -41,6 +62,13 @@ public class SongLyricsDatabase extends SQLiteOpenHelper{
         }
 
         //this function gets called if the database version on your device is higher than VERSION_NUM
+
+    /**
+     *
+     * @param db
+     * @param oldVersion
+     * @param newVersion
+     */
         @Override
         public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion)
         {   //Drop the old table:
