@@ -61,7 +61,7 @@ public class DeezerDetailsFragment extends Fragment {
 
         //show the message
         TextView message = (TextView)result.findViewById(R.id.fragmessage);
-        message.setText("Your Favourites:");
+        message.setText(getString(R.string.deezer_favstitle));
 
         //favsView
         ListView favsView = (ListView)result.findViewById(R.id.favView);
@@ -82,17 +82,17 @@ public class DeezerDetailsFragment extends Fragment {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
             Song song = tracklist.get(pos);
 
-            alertDialogBuilder.setTitle("Here are some extra details: ")
+            alertDialogBuilder.setTitle(R.string.deezer_herearedetails)
 
                     //What is the message:
-                    .setMessage("The selected row is: " + pos + "\n\n" +
-                            "Song title: " + song.getSongTitle() + "\n\n" +
-                            "Song duration: " + song.getDuration() + "\n\n" +
-                            "Album title: " + song.getAlbumTitle() + "\n\n" +
-                            "Album cover: " + song.getAlbumCover() //generate albumView xml to display this cover actually
+                    .setMessage(getString(R.string.deezer_selectedrow) + " " + pos + "\n\n" +
+                            getString(R.string.deezer_songtitle) + " " + song.getSongTitle() + "\n\n" +
+                            getString(R.string.deezer_songduration) + " " + song.getDuration() + "\n\n" +
+                            getString(R.string.deezer_albumtitle) + " " + song.getAlbumTitle() + "\n\n" +
+                            getString(R.string.deezer_albumcover) + " " + song.getAlbumCover() //generate albumView xml to display this cover actually
                     )
 
-                    .setNegativeButton("Delete song", (click, arg) -> {
+                    .setNegativeButton(getString(R.string.deezer_deletebutton), (click, arg) -> {
                         db.deleteSong(song);
                         albumsCovers.remove(pos);
                         tracklist.remove(pos);

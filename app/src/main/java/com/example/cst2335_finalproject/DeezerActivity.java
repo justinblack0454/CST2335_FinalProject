@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.renderscript.ScriptGroup;
 import android.text.InputFilter;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
@@ -73,7 +72,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
     ArrayList<Song> favourites = new ArrayList<>();
     TrackListAdapter adapter;
     ImageView albumCoverView;
-    SongQuery songQuery = new SongQuery();
+    //SongQuery songQuery = new SongQuery();
     EditText searchField;
     ProgressBar progressBar;
     String songListUrl;
@@ -154,18 +153,18 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             Song song = tracklist.get(pos);
 
-            alertDialogBuilder.setTitle("Here are some extra details: ")
+            alertDialogBuilder.setTitle(R.string.deezer_herearedetails)
 
                     //What is the message:
-                    .setMessage("The selected row is: " + pos + "\n\n" +
-                        "Song title: " + song.getSongTitle() + "\n\n" +
-                            "Song duration: " + song.getDuration() + "\n\n" +
-                            "Album title: " + song.getAlbumTitle() + "\n\n" +
-                            "Album cover: " + song.getAlbumCover() //generate albumView xml to display this cover actually
+                    .setMessage(getString(R.string.deezer_selectedrow) + " " + pos + "\n\n" +
+                        getString(R.string.deezer_songtitle) + " " + song.getSongTitle() + "\n\n" +
+                            getString(R.string.deezer_songduration) + " " + song.getDuration() + "\n\n" +
+                            getString(R.string.deezer_albumtitle) + " " + song.getAlbumTitle() + "\n\n" +
+                            getString(R.string.deezer_albumcover) + " " + song.getAlbumCover() //generate albumView xml to display this cover actually
                     )
 
                     //positive button to favourite the song which then put song in DB and opens fragment with the favourties db view
-                    .setPositiveButton("add to favourites", (click, arg) -> {
+                    .setPositiveButton(getString(R.string.deezer_addtofavs), (click, arg) -> {
                         ContentValues newRowValues = new ContentValues();
                         newRowValues.put(DeezerDB.ARTIST, artistName);
                         newRowValues.put(DeezerDB.SONG, song.getSongTitle());
@@ -175,7 +174,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
                         db.insert(DeezerDB.TABLE_NAME, null, newRowValues);
                         favSongArt.add(albumsCovers.get(pos));
-                        loadDataFromDatabase(); //TODO should work now
+                        loadDataFromDatabase(); //should now update the tracklist and favourite lists properly
 
                         adapter.notifyDataSetChanged();
 
@@ -191,9 +190,9 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         /**
          * temporary snack bar showing "coming soon" when user clicks search button
          */
-        Snackbar comingSoon = Snackbar.make(findViewById(R.id.searchButton),
-                "search functionality coming soon",
-                Snackbar.LENGTH_LONG);
+//        Snackbar comingSoon = Snackbar.make(findViewById(R.id.searchButton),
+//                "search functionality coming soon",
+//                Snackbar.LENGTH_LONG);
 
         searchButton.setOnClickListener(btn -> {
             //comingSoon.show();
@@ -265,16 +264,16 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         {
             //what to do when the menu item is selected:
             case R.id.aboutProject:
-                message = "This is the Deezer activity, written by Justin Black";
+                message = getString(R.string.deezer_credits);
                 break;
             case R.id.geoChoice1:
-                message = "You clicked on GeoActivity";
+                message = getString(R.string.deezer_geoclickmsg);
                 break;
             case R.id.lyricsChoice2:
-                message = "You clicked on LyricsActivity";
+                message = getString(R.string.deezer_lyricsclickmsg);
                 break;
             case R.id.soccerChoice3:
-                message = "You clicked on SoccerActivity";
+                message = getString(R.string.deezer_soccerclickmsg);
                 break;
 
         }
@@ -344,21 +343,18 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
         switch(item.getItemId()) {
             case R.id.deezer_instructions:
-                message = "You clicked deezer instructions";
+                message = getString(R.string.deezer_deezerclickmsg);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                alertDialogBuilder.setTitle("Instructions for Deezer Activity: ")
+                alertDialogBuilder.setTitle(getString(R.string.deezer_instructionstitle))
 
                         //What is the message:
-                        .setMessage("To search:" + "\n" + "Type an artist or band name and hit search" + "\n\n" +
-                        "To favourite a song:" + "\n" +  "Long click on the song and click favourite" + "\n\n" +
-                        "To see your favourite songs:" + "\n" + "Click the favourites button at the bottom of the main page"
-                        )
+                        .setMessage(getString(R.string.deezer_instructiondetails))
 
                         //Show the dialog
                         .create().show();
                 break;
             case R.id.about_deezer_api:
-                message = "You clicked deezer api";
+                message = getString(R.string.deezer_deezerapiclickmsg);
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://developers.deezer.com/guidelines"));
                 startActivity(browserIntent);
                 break;
@@ -369,25 +365,23 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                 });
                 donate.setKeyListener(DigitsKeyListener.getInstance());
 
-                message = "You clicked deezer donate";
+                message = getString(R.string.deezer_deezerdonateclickmsg);
                 AlertDialog.Builder donateDialogBuilder = new AlertDialog.Builder(this);
-                donateDialogBuilder.setTitle("Donate")
-                        .setMessage("How much would you like to donate?")
+                donateDialogBuilder.setTitle(getString(R.string.deezer_donate))
+                        .setMessage(getString(R.string.deezer_donateamountmsg))
                         .setView(donate)
-                        .setPositiveButton("Thanks", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getString(R.string.deezer_thankyoumsg), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //TODO add thank you msg (snakcbar)
                                 Snackbar thanksMsg = Snackbar.make(findViewById(R.id.searchButton),
-                                        "Thank you!",
+                                        getString(R.string.deezer_thankyoumsg),
                                         Snackbar.LENGTH_LONG);
                                 thanksMsg.show();
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getString(R.string.deezer_cancelbutton), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //TODO add cancelled msg
                             }
                         })
                         .create().show();
@@ -457,7 +451,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                       @Override
                     public void run() {
                         Toast.makeText(getApplicationContext(),
-                                "Please wait while we get your song list",
+                                getString(R.string.deezer_waitmsg),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -549,10 +543,8 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            trackListTitle.setText("Showing results for " + artistName);
-//                            Toast.makeText(getApplicationContext(),
-//                                    "Search Completed",
-//                                    Toast.LENGTH_SHORT).show();
+                            trackListTitle.setText(getString(R.string.deezer_resultstitle) + " " + artistName);
+//
                         }
 
                     });

@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/searchButton"
                 android:layout_alignParentTop="true"
-                android:hint="@string/searchhere" />
+                android:hint="@string/deezer_searchhere" />
 
             <Button
                 android:id="@+id/searchButton"
@@ -35,7 +35,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/searchButton" />
+                android:text="@string/deezer_searchButton" />
 
             <TextView
                 android:id="@+id/artistName"
@@ -58,7 +58,7 @@
                 android:id="@+id/favsButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Favourites"
+                android:text="@string/deezer_favourites"
                 android:layout_alignParentBottom="true"/>
 
             <ProgressBar

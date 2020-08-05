@@ -6,14 +6,14 @@
 
 
     <item android:id="@+id/deezer_instructions"
-        android:title="Instruction for this app"
+        android:title="@string/deezer_instructions"
         android:orderInCategory="50" />
 
     <item android:id="@+id/about_deezer_api"
         android:orderInCategory="75"
-        android:title="About the API" />
+        android:title="@string/deezer_about_api" />
 
     <item android:id="@+id/deezer_donate"
-        android:title="Donate to the project"
+        android:title="@string/deezer_donate"
         android:orderInCategory="100"/> <!-- This uses showAsAction=never, so look at title= parameter -->
 </menu>

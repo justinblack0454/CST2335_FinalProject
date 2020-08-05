@@ -25,7 +25,7 @@
 
     <item android:id="@+id/aboutProject"
         android:icon="@drawable/deezer_lyrics_icon"
-        android:title="About this project"
+        android:title="@string/deezer_about"
         app:showAsAction="never"
         android:orderInCategory="400"/> <!-- This uses showAsAction=never, so look at title= parameter -->
 
