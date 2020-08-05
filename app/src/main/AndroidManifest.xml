@@ -12,7 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SoccerEmptyActivity"></activity>
-        <activity android:name=".SoccerFavourites"></activity>
         <activity android:name=".SoccerActivity" />
         <activity android:name=".DeezerActivity" />
         <activity android:name=".MainActivity">

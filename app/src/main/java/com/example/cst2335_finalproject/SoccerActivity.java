@@ -65,10 +65,6 @@ public class SoccerActivity extends AppCompatActivity {
     public static final String TEAM_2 = "TEAM2";
     public static final String URL = "URL";
 
-SoccerDetailsFragment soccerFragment;
-
-private Handler mainHandler = new Handler();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,11 +78,12 @@ private Handler mainHandler = new Handler();
         loadDataFromDatabase();
 
 
-        //Takes user to favourites page, acceses the database
+        //Takes user to favourites page, accesses the database
 
         goToFavourites = findViewById(R.id.favouritesButton);
-        goToFavourites.setOnClickListener( v -> {
-            Intent goToFavourites = new Intent(SoccerActivity.this, SoccerFavourites.class);
+        goToFavourites.setOnClickListener(v -> {
+            Intent goToFavourites = new Intent(SoccerActivity.this, SoccerEmptyActivity.class);
+            goToFavourites.putExtra("favourites", favourites);
             startActivity(goToFavourites);
         });
 
@@ -99,7 +96,6 @@ private Handler mainHandler = new Handler();
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             Match longSelectedMatch = matches.get(position);
             alertDialogBuilder.setTitle(longSelectedMatch.getTitle() + "\nAdd to favourites?");
-//            alertDialogBuilder.setTitle("Would you like to save this match to your favourites?");
 
             //what is the message:
             alertDialogBuilder.setMessage("The date is: " + longSelectedMatch.getDate() + "\n\nTeam 1 is: " + longSelectedMatch.getTeam1() + "\n\nTeam 2 is: " + longSelectedMatch.getTeam2());
@@ -111,7 +107,6 @@ private Handler mainHandler = new Handler();
                 ContentValues newRow = new ContentValues();
                 newRow.put(MySoccerOpener.COL_TITLE, longSelectedMatch.getTitle());
                 newRow.put(MySoccerOpener.COL_DATE, longSelectedMatch.getDate());
-                newRow.put(MySoccerOpener.COL_ID, longSelectedMatch.getId());
                 newRow.put(MySoccerOpener.COL_TEAM_1, longSelectedMatch.getTeam1());
                 newRow.put(MySoccerOpener.COL_TEAM_2, longSelectedMatch.getTeam2());
                 newRow.put(MySoccerOpener.COL_URL, longSelectedMatch.getUrl());
@@ -119,19 +114,6 @@ private Handler mainHandler = new Handler();
                 db.insert(MySoccerOpener.TABLE_NAME, null, newRow);
                 loadDataFromDatabase();
                 matchAdapter.notifyDataSetChanged();
-
-//                String titleToAdd = longSelectedMatch.getTitle();
-//                String dateToAdd = longSelectedMatch.getDate();
-//                String team1
-
-//                //Create a bundle to pass data to the new fragment
-//                Bundle dataToPass = new Bundle();
-//                dataToPass.putString(TITLE, longSelectedMatch.getTitle());
-//                dataToPass.putString(DATE, longSelectedMatch.getDate());
-//                dataToPass.putString(TEAM_1, longSelectedMatch.getTeam1());
-//                dataToPass.putString(TEAM_2, longSelectedMatch.getTeam2());
-//                dataToPass.putString(URL, longSelectedMatch.getUrl());
-
                 //add toast or snack bar here perhaps
 
             });
@@ -159,19 +141,9 @@ private Handler mainHandler = new Handler();
             //What the yes button does
             alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
                 //takes user to soccer highlights page
-                //this was the functional code that opened a fragment. Removing for now to try in favour of browser.
-//                Bundle dataToPass = new Bundle();
-//                dataToPass.putString(URL, selectedMatch.getUrl());
-//
-//                Intent nextActivity = new Intent(SoccerActivity.this, SoccerHighlightActivity.class);
-//                nextActivity.putExtras(dataToPass); //send data to next activity
-//                startActivity(nextActivity); //make the transition
+
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(selectedMatch.getUrl()));
                 startActivity(browserIntent);
-
-
-//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(selectedMatch.getUrl()));
-//                startActivity(browserIntent);
 
                 //add toast or snackbar here perhaps
             });
@@ -186,20 +158,27 @@ private Handler mainHandler = new Handler();
         });
     }
 
+    protected void removeMatch(Match match) {
+        db.delete(MySoccerOpener.TABLE_NAME, MySoccerOpener.COL_ID + "= ?", new String[]{Long.toString(match.getId())});
+    }
+
     private class MatchListAdapter extends BaseAdapter {
         @Override
         public int getCount() {
             return matches.size();
         }
+
         @Override
         public Match getItem(int position) {
             return matches.get(position);
         }
+
         @Override
         //last week we returned (long) position. Now we return the object's database id that we get from line 71
         public long getItemId(int position) {
             return matches.get(position).getId();
         }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             Match match = (Match) getItem(position);
@@ -227,23 +206,16 @@ private Handler mainHandler = new Handler();
         String title;
         String team1;
         String team2;
-        String embed;
         String url;
-        String thumbnail; //possible switch to image
         String date;
         long id;
 
-        public Match(String title, String date, String team1, String team2, String url, long id){
+        public Match(String title, String date, String team1, String team2, String url) {
             this.title = title;
             this.date = date;
             this.team1 = team1;
             this.team2 = team2;
             this.url = url;
-            this.id = id;
-        }
-
-        public Match(String title, String date, String team1, String team2, String url) {
-            this(title, date, team1, team2, url, 0);
         }
 
 
@@ -259,16 +231,9 @@ private Handler mainHandler = new Handler();
             return team2;
         }
 
-        public String getEmbed() {
-            return embed;
-        }
 
         public String getUrl() {
             return url;
-        }
-
-        public String getThumbnail() {
-            return thumbnail;
         }
 
         public String getDate() {
@@ -319,13 +284,6 @@ private Handler mainHandler = new Handler();
                     String team1 = match.getJSONObject("side1").getString("name");
                     String team2 = match.getJSONObject("side2").getString("name");
 
-
-                    // for url:
-                    //get string under embed object of videos array
-                    //save to variable
-                    //parse string with String.split() or something to get url after word src
-                    //String url;
-
                     //revisit later. For now, just take first embedded video. Some matches have more than 1
                     JSONArray videosArray = match.getJSONArray("videos");
                     for (int j = 0; j < 1; j++) {
@@ -355,12 +313,10 @@ private Handler mainHandler = new Handler();
         public void onProgressUpdate(Integer... value) {
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(value[0]);
-
         }
 
         public void onPostExecute(String fromDoInBackground) {
             progressBar.setVisibility(View.INVISIBLE);
-
         }
     }
 
@@ -374,7 +330,6 @@ private Handler mainHandler = new Handler();
         //query all the results from the database:
         Cursor results = db.query(false, MySoccerOpener.TABLE_NAME, columns, null, null, null, null, null, null);
 
-
         //Now the results object has rows of results that match the query.
         //find the column indices:
         int titleColIndex = results.getColumnIndex(MySoccerOpener.COL_TITLE);
@@ -383,7 +338,6 @@ private Handler mainHandler = new Handler();
         int team1ColIndex = results.getColumnIndex(MySoccerOpener.COL_TEAM_1);
         int team2ColIndex = results.getColumnIndex(MySoccerOpener.COL_TEAM_2);
         int urlColIndex = results.getColumnIndex(MySoccerOpener.COL_URL);
-
 
         //iterate over the results, return true if there is a next item:
         while (results.moveToNext()) {
@@ -395,67 +349,17 @@ private Handler mainHandler = new Handler();
             long id = results.getLong(idColIndex);
 
             //add the new Contact to the array list:
-            favourites.add(new Match(title, date, team1, team2, url, id));
+            favourites.add(new Match(title, date, team1, team2, url));
         }
-
         //At this point, the contactsList array has loaded every row from the cursor.
         printCursor(results, db.getVersion());
     }
 
-    protected void printCursor(Cursor c, int version){
+    protected void printCursor(Cursor c, int version) {
 
     }
 
-//    public class MySoccerOpener extends SQLiteOpenHelper {
-//
-//        protected final static String DATABASE_NAME = "FavouritesDB";
-//        protected final static int VERSION_NUM = 1;
-//        public final static String TABLE_NAME = "Favourites";
-//        public final static String COL_TITLE = "TITLE";
-//        public final static String COL_DATE = "DATE";
-//        public final static String COL_ID = "_id";
-//        public final static String COL_TEAM_1 = "TEAM1";
-//        public final static String COL_TEAM_2 = "TEAM2";
-//        public final static String COL_URL = "URL";
-//
-//        public MySoccerOpener(Context ctx) {
-//            super(ctx, DATABASE_NAME, null, VERSION_NUM);
-//        }
-//
-//
-//        //This function gets called if no database file exists.
-//        //Look on your device in the /data/data/package-name/database directory.
-//        @Override
-//        public void onCreate(SQLiteDatabase db) {
-//            db.execSQL("CREATE TABLE " + TABLE_NAME + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-//                    + COL_TITLE + " text,"
-//                    + COL_DATE + " text,"
-//                    + COL_TEAM_1 + " text,"
-//                    + COL_TEAM_2 + " text,"
-//                    + COL_URL + " text);");  // add or remove columns
-//        }
-//
-//        //this function gets called if the database version on your device is lower than VERSION_NUM
-//        @Override
-//        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {   //Drop the old table:
-//            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-//
-//            //Create the new table:
-//            onCreate(db);
-//        }
-//
-//
-//        //this function gets called if the database version on your device is higher than VERSION_NUM
-//        @Override
-//        public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {   //Drop the old table:
-//            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-//
-//            //Create the new table:
-//            onCreate(db);
-//        }
-//    }
-
-    private void saveSharedPrefs(String stringToSave){
+    private void saveSharedPrefs(String stringToSave) {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("SavedValue", stringToSave);
         editor.commit();

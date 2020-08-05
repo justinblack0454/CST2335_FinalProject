@@ -7,21 +7,17 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/highlightTitle"
+        android:id="@+id/titleFavourites"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:text="Your favourites list:"/>
 
-    <TextView
-        android:id="@+id/highlightUrl"
+    <ListView
+        android:id="@+id/favouritesList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/highlightTitle" />
 
-    <VideoView
-        android:id="@+id/videoView"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/highlightUrl" />
+        android:layout_below="@id/titleFavourites"/>
 
 </RelativeLayout>

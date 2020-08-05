@@ -1,25 +1,28 @@
 package com.example.cst2335_finalproject;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.example.cst2335_finalproject.SoccerActivity.Match;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SoccerDetailsFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class SoccerDetailsFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private Bundle dataFromActivity;
     private long id;
     private AppCompatActivity parentActivity;
@@ -28,47 +31,112 @@ public class SoccerDetailsFragment extends Fragment {
     private String team1;
     private String team2;
     private String url;
+    ArrayList<Match> favourites = null;
+    MatchListAdapter matchAdapter;
 
     MySoccerOpener db;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public SoccerDetailsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SoccerHighlight.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SoccerDetailsFragment newInstance(String param1, String param2) {
-        SoccerDetailsFragment fragment = new SoccerDetailsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        db = new MySoccerOpener(getContext());
+        db.getWritableDatabase();
+        favourites = db.getAll();
+
+        dataFromActivity = getArguments();
+
+        // Inflate the layout for this fragment
+        View result = inflater.inflate(R.layout.soccer_fragment_details, container, false);
+
+        TextView message = (TextView) result.findViewById(R.id.titleFavourites);
+
+        ListView listOfFavourites = (ListView) result.findViewById(R.id.favouritesList);
+        listOfFavourites.setAdapter(matchAdapter = new MatchListAdapter());
+
+        listOfFavourites.setOnItemLongClickListener((parent, view, position, id) -> {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+            Match longSelectedMatch = favourites.get(position);
+            alertDialogBuilder.setTitle(longSelectedMatch.getTitle() + "\nRemove from favourites?");
+
+            //what is the message:
+            alertDialogBuilder.setMessage("The date is: " + longSelectedMatch.getDate() + "\n\nTeam 1 is: " + longSelectedMatch.getTeam1() + "\n\nTeam 2 is: " + longSelectedMatch.getTeam2());
+
+            //What the yes button does
+            alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
+                removeMatch(longSelectedMatch);
+                favourites.remove(position);
+                matchAdapter.notifyDataSetChanged();
+                //add toast or snack bar here perhaps
+
+            });
+            //What the no button does:
+            alertDialogBuilder.setNegativeButton("No", (click, arg) -> {
+            });
+            //Show the dialog:
+            alertDialogBuilder.create().show();
+
+            return true;
+        });
+
+        return inflater.inflate(R.layout.soccer_fragment_details, container, false);
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    protected void removeMatch(Match match) {
+        db.removeMatch(match);
+    }
+
+
+    private class MatchListAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            return favourites.size();
+        }
+
+        @Override
+        public Match getItem(int position) {
+            return favourites.get(position);
+        }
+
+        @Override
+        //last week we returned (long) position. Now we return the object's database id that we get from line 71
+        public long getItemId(int position) {
+            return favourites.get(position).getId();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+//            Match match = (Match) getItem(position);
+            LayoutInflater inflater = getLayoutInflater();
+            View matchDetailView = inflater.inflate(R.layout.match_details, parent, false);
+
+            TextView matchInfo = matchDetailView.findViewById(R.id.matchInfo);
+            matchInfo.setText(getItem(position).getTitle());
+
+            TextView dateInfo = matchDetailView.findViewById(R.id.dateInfo);
+            dateInfo.setText(getItem(position).getDate());
+
+            TextView team1Info = matchDetailView.findViewById(R.id.team1Info);
+            team1Info.setText(getItem(position).getTeam1());
+
+            TextView team2Info = matchDetailView.findViewById(R.id.team2Info);
+            team2Info.setText(getItem(position).getTeam2());
+
+            return matchDetailView;
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_soccer_highlight, container, false);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        //context will either be FragmentExample for a tablet, or EmptyActivity for phone
+        parentActivity = (AppCompatActivity) context;
     }
+
+
 }

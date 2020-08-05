@@ -21,35 +21,33 @@ public class MySoccerOpener extends SQLiteOpenHelper {
     public final static String COL_TEAM_2 = "TEAM2";
     public final static String COL_URL = "URL";
 
-    public final String[] columns = {COL_TITLE, COL_DATE, COL_ID, COL_TEAM_1, COL_TEAM_2, COL_URL};
+    public final String[] columns = {COL_ID, COL_TITLE, COL_DATE, COL_TEAM_1, COL_TEAM_2, COL_URL};
 
     public MySoccerOpener(Context ctx) {
         super(ctx, DATABASE_NAME, null, VERSION_NUM);
     }
-    public ArrayList<SoccerActivity.Match> getAll() {
+    public ArrayList<Match> getAll() {
         SQLiteDatabase db = this.getWritableDatabase();
-        ArrayList<SoccerActivity.Match> favourites = new ArrayList<>();
+        ArrayList<Match> favouriteMatches = new ArrayList<>();
         Cursor c = db.query(TABLE_NAME, columns, null, null, null, null, null);
         c.moveToFirst();
         while (!c.isAfterLast()) {
-            favourites.add(new Match(c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5)));
+            favouriteMatches.add(new Match(c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5)));
             c.moveToNext();
         }
-        return favourites;
+        return favouriteMatches;
     }
 
     public void add(ContentValues values) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_NAME, null, values);
-
     }
 
-    public void remove(Match match) {
+    public void removeMatch(Match match) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAME,  COL_ID + "= ?" + match.getId(), null);
 
     }
-
     //This function gets called if no database file exists.
     //Look on your device in the /data/data/package-name/database directory.
     @Override
@@ -61,7 +59,6 @@ public class MySoccerOpener extends SQLiteOpenHelper {
                 + COL_TEAM_2 + " text,"
                 + COL_URL + " text);");  // add or remove columns
     }
-
     //this function gets called if the database version on your device is lower than VERSION_NUM
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {   //Drop the old table:
@@ -70,13 +67,10 @@ public class MySoccerOpener extends SQLiteOpenHelper {
         //Create the new table:
         onCreate(db);
     }
-
-
     //this function gets called if the database version on your device is higher than VERSION_NUM
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {   //Drop the old table:
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-
         //Create the new table:
         onCreate(db);
     }
