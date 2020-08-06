@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,13 +17,18 @@ public class MainActivity extends AppCompatActivity {
 
         Button deezerButton = findViewById(R.id.deezerButton);
         Button soccerButton = findViewById(R.id.soccerButton);
+        Button songLyricsButton = findViewById(R.id.songlyrics);
 
         deezerButton.setOnClickListener(btn -> {
             Intent goToDeezer = new Intent(MainActivity.this, DeezerActivity.class);
             startActivity(goToDeezer);
         });
 
-        songLyricsButton = findViewById(R.id.songlyrics);
+        soccerButton.setOnClickListener(btn -> {
+            Intent goToSoccer = new Intent(MainActivity.this, SoccerActivity.class);
+            startActivity(goToSoccer);
+        });
+
         songLyricsButton.setOnClickListener(btn -> {
             Intent goToSongLyrics = new Intent(MainActivity.this, SongLyricsActivity.class);
             startActivity(goToSongLyrics);
