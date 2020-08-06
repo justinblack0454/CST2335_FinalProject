@@ -107,7 +107,7 @@ public class SoccerActivity extends AppCompatActivity {
         listOfGameTitles.setOnItemLongClickListener((parent, view, position, id) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             Match longSelectedMatch = matches.get(position);
-            alertDialogBuilder.setTitle(longSelectedMatch.getTitle() + "\n" + R.string.addToFavs);
+            alertDialogBuilder.setTitle(longSelectedMatch.getTitle() + "\n" + R.string.soccerAddToFavs);
 
             //what is the message:
             alertDialogBuilder.setMessage(R.string.soccerDateIs + longSelectedMatch.getDate() + "\n\n" + R.string.team1Is + longSelectedMatch.getTeam1()

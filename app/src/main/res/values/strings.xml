@@ -13,7 +13,7 @@
 
     <!-- Soccer Strings -->
     <string name="SoccerFetch">Fetching recent matches...</string>
-    <string name="addToFavs">Add to favourites?</string>
+    <string name="soccerAddToFavs">Add to favourites?</string>
     <string name="soccerDateIs">The date is: </string>
     <string name="team1Is">Team 1 is: </string>
     <string name="team2Is">Team 2 is: </string>

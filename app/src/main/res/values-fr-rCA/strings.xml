@@ -15,7 +15,7 @@
 
     <!-- Soccer Strings -->
     <string name="SoccerFetch">Récupération des matchs récents...</string>
-    <string name="addToFavs">Ajouter aux Favoris?</string>
+    <string name="soccerAddToFavs">Ajouter aux Favoris?</string>
     <string name="soccerDateIs">La date est: </string>
     <string name="team1Is">L\'équipe 1 est: </string>
     <string name="team2Is">L\'équipe 2 est: </string>
@@ -27,4 +27,7 @@
     <string name="soccerRemovedFavs">Supprimé des favoris.</string>
     <string name="SoccerYourFavs">Vos favoris: </string>
     <string name="matchInfo">Informations sur le match: </string>
+    <string name="soccerGeoDataSource">Source de données géographiques</string>
+    <string name="soccerDeezer">Recherche de morceaux Deezer</string>
+    <string name="soccerLyrics">Recherche de paroles de chansons</string>
 </resources>
