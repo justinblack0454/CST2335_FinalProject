@@ -15,10 +15,10 @@
         android:orderInCategory="50"
         android:icon="@drawable/geo"
         app:showAsAction="always"
-        android:title="@string/geo"/>
+        android:title="@string/lyricsgeo"/>
 
     <item android:id="@+id/deezer"
-        android:title="@string/deezer"
+        android:title="@string/lyricsdeezer"
         android:icon="@drawable/deezer"
         android:orderInCategory="100"
         app:showAsAction="always"/>  <!-- This uses showAsAction=always, so look at icon= parameter -->
@@ -29,7 +29,7 @@
 
     <item android:id="@+id/soccer"
         android:icon="@drawable/soccer"
-        android:title="@string/soccer"
+        android:title="@string/lyricssoccer"
         app:showAsAction="always"
         android:orderInCategory="400"/> <!-- This uses showAsAction=never, so look at title= parameter -->
 

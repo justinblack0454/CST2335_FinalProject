@@ -103,7 +103,7 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
         setSupportActionBar(tBar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
-                drawer, tBar, R.string.open, R.string.close);
+                drawer, tBar, R.string.lyricsopen, R.string.lyricsclose);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -387,7 +387,7 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
                 startActivity(goToDeezer);
                 break;
             case R.id.soccer:
-                Intent goToSoccer = new Intent(SongLyricsActivity.this, SongLyricsActivity.class);
+                Intent goToSoccer = new Intent(SongLyricsActivity.this, SoccerActivity.class);
                 startActivity(goToSoccer);
                 break;
             case R.id.about:

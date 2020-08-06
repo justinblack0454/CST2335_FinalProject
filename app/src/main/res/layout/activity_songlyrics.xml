@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/searchlyrics"
 
-            android:hint="@string/searchartist"
+            android:hint="@string/lyricssearchartist"
             tools:ignore="NotSibling" />
 
 
@@ -49,7 +49,7 @@
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/searchButton"
+            android:text="@string/lyricsgoogleSearchButton"
             tools:ignore="NotSibling" />
         <EditText
             android:id="@+id/searchtitle"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/savelyrics"
 
-            android:hint="@string/searchtitle"
+            android:hint="@string/lyricssearchtitle"
             android:layout_below="@id/searchartist"/>
 
         <Button
@@ -66,7 +66,7 @@
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/saveButton" />
+            android:text="@string/lyricssaveButton" />
 
 
         <Button
@@ -74,7 +74,7 @@
             android:layout_below="@id/savelyrics"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/saveit"
+            android:text="@string/lyricssaveit"
             android:layout_alignParentRight="true"
             />
         <Button
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:id="@+id/helpLyrics"
-            android:text="@string/helpLyrics"/>
+            android:text="@string/lyricshelpLyrics"/>
 
         <ProgressBar
             android:id="@+id/songLyricsProgressBar"

@@ -12,14 +12,14 @@
         android:id="@+id/messagehere"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment"
+        android:text="@string/lyricshello_blank_fragment"
         android:textSize="20dp"/>
 
     <TextView
         android:id="@+id/id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/id"
+        android:text="@string/lyricsid"
         android:textSize="20dp"/>
     <TextView
         android:layout_width="wrap_content"
@@ -47,7 +47,7 @@
             android:id="@+id/hide"
             android:layout_width="400dp"
             android:layout_height="wrap_content"
-            android:text="@string/downbotton"
+            android:text="@string/lyricsdownbotton"
 
             >
 

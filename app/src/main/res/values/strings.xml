@@ -1,31 +1,32 @@
 <resources>
     <string name="app_name">CST2335_FinalProject</string>
     <string name="searchhere">Enter artist name</string>
-    <string name="googleSearchButton">Google</string>
-    <string name="searchtitle">Enter song title</string>
-    <string name="searchartist">Enter artist name</string>
-    <string name="saveButton">Save</string>
-    <string name="helpLyrics">Help</string>
-    <string name="hello_blank_fragment">Your Favourite Song Details</string>
-    <string name="id">ID: </string>
-    <string name="downbotton">Hide</string>
-    <string name="saveit">Lyrics</string>
-    <string name="geo">Choice 1</string>
-    <string name="deezer">Choice 2</string>
-    <string name="soccer">Choice 3</string>
-    <string name="open">Open </string>
-    <string name="close">Close </string>
+    <string name="lyricsgoogleSearchButton">Google</string>
+    <string name="lyricssearchtitle">Enter song title</string>
+    <string name="lyricssearchartist">Enter artist name</string>
+    <string name="lyricssaveButton">Save</string>
+    <string name="lyricshelpLyrics">Help</string>
+    <string name="lyricshello_blank_fragment">Your Favourite Song Details</string>
+    <string name="lyricsid">ID: </string>
+    <string name="lyricsdownbotton">Hide</string>
+    <string name="lyricssaveit">Lyrics</string>
+    <string name="lyricsgeo">Choice 1</string>
+    <string name="lyricsdeezer">Choice 2</string>
+    <string name="lyricssoccer">Choice 3</string>
+    <string name="lyricsopen">Open </string>
+    <string name="lyricsclose">Close </string>
     <string name="lyricsforfragment">Click on Lyrics Button to get lyrics for this song instantly! </string>
-    <string name="instructions">Instructions for this app</string>
-    <string name="apiitis">About the API</string>
-    <string name="donateit">Donate to Project</string>
-    <string name="searchButton">Search</string>
+    <string name="lyricsinstructions">Instructions for this app</string>
+    <string name="lyricsapiitis">About the API</string>
+    <string name="lyricsdonateit">Donate to Project</string>
+    <string name="lyricssearchButton">Search</string>
     <string name="title_activity_soccer_highlight">SoccerHighlight</string>
     <!--
     This string is used for square devices and overridden by hello_world in
     values-round/strings.xml for round devices.
     -->
     <string name="hello_world">Hello Square World!</string>
+    <string name="searchButton">Search</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 
