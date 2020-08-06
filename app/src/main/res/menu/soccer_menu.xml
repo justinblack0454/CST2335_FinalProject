@@ -6,6 +6,7 @@
 
     <item
         android:id="@+id/soccerGeoLink"
+        android:icon="@drawable/soccer_geo"
         android:orderInCategory="100"
         android:title="@string/soccerGeoDataSource"
         app:showAsAction="always"
@@ -13,7 +14,7 @@
 
     <item
         android:id="@+id/soccerDeezerLink"
-
+        android:icon="@drawable/soccer_song_search"
         android:orderInCategory="200"
         android:title="@string/soccerDeezer"
         app:showAsAction="always"
@@ -21,6 +22,7 @@
 
     <item
         android:id="@+id/soccerLyricsLink"
+        android:icon="@drawable/soccer_lyrics"
         android:orderInCategory="300"
         android:title="@string/soccerLyrics"
         app:showAsAction="always"
