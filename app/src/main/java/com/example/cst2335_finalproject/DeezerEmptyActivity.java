@@ -58,6 +58,11 @@ public class DeezerEmptyActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * dead class - wanted to try and run another method for grabbing album covers but there are sync
+     * issues with the list view inflating before the background process is done.  Still playing with
+     * it for fun to see if I can figure out how to solve so I'm leaving it in the code.
+     */
     private class CoverQuery extends AsyncTask<String, Integer, String> {
 
         @Override

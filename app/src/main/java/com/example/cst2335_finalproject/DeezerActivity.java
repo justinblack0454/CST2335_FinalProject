@@ -72,7 +72,6 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
     ArrayList<Song> favourites = new ArrayList<>();
     TrackListAdapter adapter;
     ImageView albumCoverView;
-    //SongQuery songQuery = new SongQuery();
     EditText searchField;
     ProgressBar progressBar;
     String songListUrl;
@@ -198,7 +197,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
             //comingSoon.show();
             artistName = searchField.getText().toString();
             tracklist.clear();
-            albumsCovers.clear(); //TODO double check if this messes anything else up
+            albumsCovers.clear();
             new SongQuery().execute("https://api.deezer.com/search/artist/?q=" + searchField.getText().toString().replace(" ", "") + "&output=xml");
             saveSharedPrefs(searchField.getText().toString());
         });
@@ -213,12 +212,20 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         }));
     }
 
+
+    /**
+     * saves the edittext value on activity pause
+     */
     @Override
     protected void onPause(){
         super.onPause();
         savedSearchString = searchField.getText().toString();
         saveSharedPrefs(searchField.getText().toString());
     }
+
+    /**
+     * saves the edittext value on activity stop
+     */
 
     @Override
     protected void onStop(){
@@ -227,6 +234,9 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         saveSharedPrefs(searchField.getText().toString());
     }
 
+    /**
+     * loads the shared prefs into edittext on activity resume
+     */
     @Override
     protected void onResume(){
         super.onResume();
@@ -234,12 +244,18 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         loadDataFromDatabase();
     }
 
+    /**
+     * loads the shared prefs into edittext on activity restart
+     */
     @Override
     protected void onRestart(){
         super.onRestart();
         searchField.setText(savedSearchString);
     }
 
+    /**
+     * clears the shared prefs on activity destroy
+     */
     @Override
     protected void onDestroy(){
         super.onDestroy();
@@ -248,6 +264,11 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         editor.commit();
     }
 
+    /**
+     * displays the toolbar/drawer
+     * @param menu - the menu object
+     * @return - returns true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
@@ -282,11 +303,18 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         return true;
     }
 
+    /**
+     * deletes favourite song - currently not used in this class but may be used at some point
+     * @param song - song object
+     */
     protected void deleteFaveSong(Song song)
     {
         db.delete(DeezerDB.TABLE_NAME, DeezerDB.SONG + "= ?", new String[] {song.getSongTitle()});
     }
 
+    /**
+     * loads favourites list from database and updates favourites tracklist array with the song objects created from the data
+     */
     private void loadDataFromDatabase() {
         DeezerDB dbOpener = new DeezerDB(this);
         db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
@@ -330,6 +358,11 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
     }
 
+    /**
+     * printing database details to logcat
+     * @param c - Cursor object
+     * @param version - database version
+     */
     protected void printCursor (Cursor c, int version) {
         Log.v("Cursor Object", String.valueOf(db.getVersion()));
         Log.v("Cursor number of cols", String.valueOf(c.getColumnCount()));
@@ -338,6 +371,11 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(c));
     }
 
+    /**
+     * logic for when menu items are clicked from drawer
+     * @param item - the menu item being selected by the user
+     * @return - returns false
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         String message = null;
@@ -360,7 +398,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
                 startActivity(browserIntent);
                 break;
             case R.id.deezer_donate:
-                EditText donate = new EditText(this); //TODO maybe set it to deezerDonateText
+                EditText donate = new EditText(this);
                 donate.setFilters(new InputFilter[] {
                 DigitsKeyListener.getInstance(false, true),
                 });
@@ -396,6 +434,9 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         return false;
     }
 
+    /**
+     * populates the listview with the songlist search results
+     */
     private class TrackListAdapter extends BaseAdapter {
 
         @Override
@@ -427,7 +468,7 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
             ImageView coverInfo = newView.findViewById((R.id.albumImage));
             coverInfo.setImageBitmap(cover);
 
-            adapter.notifyDataSetChanged(); //TODO test this everywhere to make sure
+            adapter.notifyDataSetChanged();
 
             return newView;
         }
@@ -602,6 +643,11 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
         }
     }
 
+    /**
+     * helper method to find album covers for the songs
+     * @param coverLink - the url for the album cover image
+     * @return - returns the album cover bitmap
+     */
     public Bitmap findAlbumCover(String coverLink) {
         Bitmap artwork = null;
         try {
@@ -683,6 +729,10 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
 
     }
 
+    /**
+     * saves what user enters into edittext field
+     * @param stringToSave
+     */
     private void saveSharedPrefs(String stringToSave) {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("ReserveName", stringToSave);

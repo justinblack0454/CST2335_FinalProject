@@ -37,13 +37,9 @@ public class DeezerDetailsFragment extends Fragment {
     private AppCompatActivity parentActivity;
     TrackListAdapter adapter;
 
-
-
     public DeezerDetailsFragment() {
         // Required empty public constructor
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,8 +115,9 @@ public class DeezerDetailsFragment extends Fragment {
         return result;
     }
 
-
-
+    /**
+     * populates the listview with the favourites database items
+     */
     private class TrackListAdapter extends BaseAdapter {
 
         @Override

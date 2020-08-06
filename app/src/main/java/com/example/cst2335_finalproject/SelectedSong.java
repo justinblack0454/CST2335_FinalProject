@@ -23,9 +23,9 @@ import java.util.List;
 
 public class SelectedSong extends AppCompatActivity {
 
-    Bitmap albumCover = null;
+    Bitmap albumCover = null; //not used but will if I play with the extra async task
     Bitmap artwork;
-    String coverLink;
+    String coverLink; //not used but will if the async fun project gets solved
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

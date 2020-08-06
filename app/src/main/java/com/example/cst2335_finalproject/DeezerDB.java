@@ -44,6 +44,10 @@ public class DeezerDB extends SQLiteOpenHelper {
                 + COVER + " text);");  // add or remove columns
     }
 
+    /**
+     * helper method to query the entire database - allows other classes to grab the favourites tracklist
+     * @return - the favourites tracklist
+     */
     public ArrayList<Song> getAll() {
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<Song> favsList = new ArrayList<>();
@@ -56,12 +60,21 @@ public class DeezerDB extends SQLiteOpenHelper {
         return favsList;
     }
 
+    /**
+     * helper method to add songs to database.  Currently not being used - adding songs manually
+     * @param values - values passed for query
+     */
     public void addSong(ContentValues values) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_NAME, null, values);
 
     }
 
+    /**
+     * helper method to delete songs from database.
+     * @param song
+     * @return
+     */
     public boolean deleteSong(Song song) {
         SQLiteDatabase db = this.getWritableDatabase();
         //db.delete(TABLE_NAME, SONG + "=" + song.getSongTitle(), null);
