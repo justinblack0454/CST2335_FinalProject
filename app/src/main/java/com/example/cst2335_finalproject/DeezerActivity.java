@@ -100,7 +100,8 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deezer);
-
+        DeezerDB dbOpener = new DeezerDB(this);
+        db = dbOpener.getWritableDatabase();
         albumCoverView = null;
         prefs = getSharedPreferences("FileName", Context.MODE_PRIVATE);
         savedSearchString = prefs.getString("ReserveName", null);
@@ -241,7 +242,11 @@ public class DeezerActivity extends AppCompatActivity implements NavigationView.
     protected void onResume(){
         super.onResume();
         searchField.setText(savedSearchString);
-        loadDataFromDatabase();
+        try {
+            loadDataFromDatabase();
+        }catch(Exception ex){
+
+        }
     }
 
     /**
