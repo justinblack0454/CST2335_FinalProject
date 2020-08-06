@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textSize="20sp"
-        android:text="FINAL PROJECT"
+        android:text="@string/main_final_project"
         android:paddingBottom="50dp"
         />
 

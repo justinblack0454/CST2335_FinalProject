@@ -13,6 +13,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".SoccerEmptyActivity"></activity>
         <activity android:name=".SoccerActivity" />
+        <activity android:name=".SelectedSong"></activity>
+        <activity android:name=".DeezerEmptyActivity"></activity>
         <activity android:name=".DeezerActivity" />
         <activity android:name=".EmptyLyricsActivity" />
         <activity android:name=".SongLyricsActivity" />
