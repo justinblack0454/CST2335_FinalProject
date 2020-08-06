@@ -1,22 +1,33 @@
 <resources>
-    <string name="app_name">CSTdeux mille deux cent trente-cinq_Projet final</string>
-    <string name="searchhere">Entrez le nom de l\'artiste</string>
-    <string name="searchButton">Google</string>
-    <string name="searchtitle">Entrez le titre de la chanson</string>
-    <string name="searchartist">Entrez le nom de l\'artiste</string>
-    <string name="saveButton">enregistrer</string>
-    <string name="helpLyrics">Aidez-moi</string>
-    <string name="hello_blank_fragment">Détails de votre chanson préférée</string>
-    <string name="id">Identité: </string>
-    <string name="downbotton">Cacher</string>
-    <string name="saveit">Paroles</string>
-    <string name="geo">Choix 1</string>
-    <string name="deezer">Choix 2</string>
-    <string name="soccer">Choix 3</string>
-    <string name="open">Ouverte </string>
-    <string name="close">Fermer </string>
-    <string name="lyricsforfragment">Cliquez sur le bouton Paroles pour obtenir les paroles de cette chanson instantanément! </string>
-    <string name="instructions">Instructions pour cette application</string>
-    <string name="apiitis">À propos de l\'API</string>
-    <string name="donateit">Faire un don au projet</string>
+    <string name="app_name">CST2335_FinalProject</string>
+    <string name="searchhere">Enter artist name</string>
+    <string name="searchButton">Search</string>
+    <string name="title_activity_soccer_highlight">SoccerHighlight</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+
+    <!-- Soccer Strings -->
+    <string name="SoccerFetch">Récupération des matchs récents...</string>
+    <string name="soccerAddToFavs">Ajouter aux Favoris?</string>
+    <string name="soccerDateIs">La date est: </string>
+    <string name="team1Is">L\'équipe 1 est: </string>
+    <string name="team2Is">L\'équipe 2 est: </string>
+    <string name="soccerYes">Oui</string>
+    <string name="soccerAddedToFavs">Ajouté aux favoris.</string>
+    <string name="soccerNo">Non</string>
+    <string name="soccerWatchHighlights">Regarder les moments forts du match?</string>
+    <string name="soccerRemoveFav">Supprimer des favoris?</string>
+    <string name="soccerRemovedFavs">Supprimé des favoris.</string>
+    <string name="SoccerYourFavs">Vos favoris: </string>
+    <string name="matchInfo">Informations sur le match: </string>
+    <string name="soccerGeoDataSource">Source de données géographiques</string>
+    <string name="soccerDeezer">Recherche de morceaux Deezer</string>
+    <string name="soccerLyrics">Recherche de paroles de chansons</string>
 </resources>

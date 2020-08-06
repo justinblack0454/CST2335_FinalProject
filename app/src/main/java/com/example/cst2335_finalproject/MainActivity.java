@@ -8,13 +8,14 @@ import android.util.Log;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-    Button songLyricsButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Button deezerButton = findViewById(R.id.deezerButton);
+        Button soccerButton = findViewById(R.id.soccerButton);
 
         deezerButton.setOnClickListener(btn -> {
             Intent goToDeezer = new Intent(MainActivity.this, DeezerActivity.class);
