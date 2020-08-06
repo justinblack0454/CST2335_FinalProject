@@ -8,24 +8,24 @@
         android:id="@+id/matchInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Match info:"/>
+        android:text="@string/matchInfo"/>
 
     <TextView
         android:id="@+id/dateInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Date:"/>
+        android:text="@string/soccerDateIs"/>
 
     <TextView
         android:id="@+id/team1Info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Team 1:"/>
+        android:text="@string/team1Is"/>
 
     <TextView
         android:id="@+id/team2Info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Team 2:"/>
+        android:text="@string/team2Is"/>
 
 </LinearLayout>

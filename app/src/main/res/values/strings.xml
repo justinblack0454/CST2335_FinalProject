@@ -10,4 +10,22 @@
     <string name="hello_world">Hello Square World!</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Soccer Strings -->
+    <string name="SoccerFetch">Fetching recent matches...</string>
+    <string name="addToFavs">Add to favourites?</string>
+    <string name="soccerDateIs">The date is: </string>
+    <string name="team1Is">Team 1 is: </string>
+    <string name="team2Is">Team 2 is: </string>
+    <string name="soccerYes">Yes</string>
+    <string name="soccerAddedToFavs">Added to favourites.</string>
+    <string name="soccerNo">No</string>
+    <string name="soccerWatchHighlights">Watch the match highlights?</string>
+    <string name="soccerRemoveFav">Remove from favourites?</string>
+    <string name="soccerRemovedFavs">Removed from favourites.</string>
+    <string name="SoccerYourFavs">Your favourites: </string>
+    <string name="matchInfo">Match Info: </string>
+    <string name="soccerGeoDataSource">Geo Data Source</string>
+    <string name="soccerDeezer">Deezer Song Search</string>
+    <string name="soccerLyrics">Song Lyrics Search</string>
 </resources>

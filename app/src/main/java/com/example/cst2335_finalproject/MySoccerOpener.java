@@ -26,6 +26,7 @@ public class MySoccerOpener extends SQLiteOpenHelper {
     public MySoccerOpener(Context ctx) {
         super(ctx, DATABASE_NAME, null, VERSION_NUM);
     }
+
     public ArrayList<Match> getAll() {
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<Match> favouriteMatches = new ArrayList<>();

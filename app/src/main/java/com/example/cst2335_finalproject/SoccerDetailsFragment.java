@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cst2335_finalproject.SoccerActivity.Match;
 
@@ -61,21 +62,24 @@ public class SoccerDetailsFragment extends Fragment {
         listOfFavourites.setOnItemLongClickListener((parent, view, position, id) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
             Match longSelectedMatch = favourites.get(position);
-            alertDialogBuilder.setTitle(longSelectedMatch.getTitle() + "\nRemove from favourites?");
+            alertDialogBuilder.setTitle(longSelectedMatch.getTitle() + "\n" + R.string.soccerRemoveFav);
 
             //what is the message:
-            alertDialogBuilder.setMessage("The date is: " + longSelectedMatch.getDate() + "\n\nTeam 1 is: " + longSelectedMatch.getTeam1() + "\n\nTeam 2 is: " + longSelectedMatch.getTeam2());
+            alertDialogBuilder.setMessage(R.string.soccerDateIs + longSelectedMatch.getDate() + "\n\n" + R.string.team1Is + longSelectedMatch.getTeam1()
+                    + "\n\n" + R.string.team2Is + longSelectedMatch.getTeam2());
 
             //What the yes button does
-            alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
+            alertDialogBuilder.setPositiveButton(R.string.soccerYes, (click, arg) -> {
                 removeMatch(longSelectedMatch);
                 favourites.remove(position);
                 matchAdapter.notifyDataSetChanged();
                 //add toast or snack bar here perhaps
 
+                Toast.makeText(getActivity(), R.string.soccerRemovedFavs, Toast.LENGTH_SHORT).show();
+
             });
             //What the no button does:
-            alertDialogBuilder.setNegativeButton("No", (click, arg) -> {
+            alertDialogBuilder.setNegativeButton(R.string.soccerNo, (click, arg) -> {
             });
             //Show the dialog:
             alertDialogBuilder.create().show();

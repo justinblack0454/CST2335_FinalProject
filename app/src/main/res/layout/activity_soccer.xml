@@ -5,12 +5,18 @@
     android:layout_weight="1"
     android:orientation="vertical">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/soccerToolBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
+
     <ProgressBar
         android:id="@+id/soccerProgressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"/>
+        android:layout_below="@+id/soccerToolBar"/>
     <TextView
         android:id="@+id/soccerHighlights"
         android:layout_width="match_parent"
@@ -28,4 +34,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/favouritesButton"/>
+
 </RelativeLayout>

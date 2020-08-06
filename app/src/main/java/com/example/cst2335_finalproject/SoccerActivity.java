@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
@@ -13,6 +14,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -24,6 +27,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,6 +43,7 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Author: Jonathan Cordingley
@@ -54,8 +61,8 @@ public class SoccerActivity extends AppCompatActivity {
     Button goToFavourites;
     TextView listHeader;
     public static final long serialVersionUID = 1L;
-    private SharedPreferences prefs;
-    private String savedSearchString;
+//    private SharedPreferences prefs;
+//    private String savedString;
 
     SQLiteDatabase db;
     int positionClicked = 0;
@@ -77,6 +84,10 @@ public class SoccerActivity extends AppCompatActivity {
 
         loadDataFromDatabase();
 
+        Toolbar soccerMyToolbar = (Toolbar) findViewById(R.id.soccerToolBar);
+        setSupportActionBar(soccerMyToolbar);
+
+
 
         //Takes user to favourites page, accesses the database
 
@@ -87,6 +98,7 @@ public class SoccerActivity extends AppCompatActivity {
             startActivity(goToFavourites);
         });
 
+        Snackbar.make(goToFavourites, R.string.SoccerFetch, Snackbar.LENGTH_LONG).show();
 
         ListView listOfGameTitles = (ListView) findViewById(R.id.gameTitlesList);
         listOfGameTitles.setAdapter(matchAdapter = new MatchListAdapter());
@@ -95,13 +107,14 @@ public class SoccerActivity extends AppCompatActivity {
         listOfGameTitles.setOnItemLongClickListener((parent, view, position, id) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             Match longSelectedMatch = matches.get(position);
-            alertDialogBuilder.setTitle(longSelectedMatch.getTitle() + "\nAdd to favourites?");
+            alertDialogBuilder.setTitle(longSelectedMatch.getTitle() + "\n" + R.string.addToFavs);
 
             //what is the message:
-            alertDialogBuilder.setMessage("The date is: " + longSelectedMatch.getDate() + "\n\nTeam 1 is: " + longSelectedMatch.getTeam1() + "\n\nTeam 2 is: " + longSelectedMatch.getTeam2());
+            alertDialogBuilder.setMessage(R.string.soccerDateIs + longSelectedMatch.getDate() + "\n\n" + R.string.team1Is + longSelectedMatch.getTeam1()
+                    + "\n\n" + R.string.team2Is + longSelectedMatch.getTeam2());
 
             //What the yes button does
-            alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
+            alertDialogBuilder.setPositiveButton(R.string.soccerYes, (click, arg) -> {
                 favourites.add(longSelectedMatch);
 
                 ContentValues newRow = new ContentValues();
@@ -112,14 +125,23 @@ public class SoccerActivity extends AppCompatActivity {
                 newRow.put(MySoccerOpener.COL_URL, longSelectedMatch.getUrl());
 
                 db.insert(MySoccerOpener.TABLE_NAME, null, newRow);
+
+                //prevents size of list from increasing endlessly - by Justin Black
+                if (favourites.size() > 0) {
+                    favourites.clear();
+                }
+
+
                 loadDataFromDatabase();
                 matchAdapter.notifyDataSetChanged();
                 //add toast or snack bar here perhaps
 
+                Toast.makeText(this, R.string.soccerAddedToFavs, Toast.LENGTH_SHORT).show();
+
             });
 
             //What the no button does:
-            alertDialogBuilder.setNegativeButton("No", (click, arg) -> {
+            alertDialogBuilder.setNegativeButton(R.string.soccerNo, (click, arg) -> {
 
             });
 
@@ -133,13 +155,14 @@ public class SoccerActivity extends AppCompatActivity {
         listOfGameTitles.setOnItemClickListener((list, item, position, id) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             Match selectedMatch = matches.get(position);
-            alertDialogBuilder.setTitle(selectedMatch.getTitle() + "\nWatch the match highlights?");
+            alertDialogBuilder.setTitle(selectedMatch.getTitle() + "\n" + R.string.soccerWatchHighlights);
 
             //what is the message:
-            alertDialogBuilder.setMessage("The date is: " + selectedMatch.getDate() + "\n\nTeam 1 is: " + selectedMatch.getTeam1() + "\n\nTeam 2 is: " + selectedMatch.getTeam2());
+            alertDialogBuilder.setMessage(R.string.soccerDateIs + selectedMatch.getDate() + "\n\n" + R.string.team1Is + selectedMatch.getTeam1()
+                    + "\n\n" + R.string.team2Is + selectedMatch.getTeam2());
 
             //What the yes button does
-            alertDialogBuilder.setPositiveButton("Yes", (click, arg) -> {
+            alertDialogBuilder.setPositiveButton(R.string.soccerYes, (click, arg) -> {
                 //takes user to soccer highlights page
 
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(selectedMatch.getUrl()));
@@ -149,7 +172,7 @@ public class SoccerActivity extends AppCompatActivity {
             });
 
             //What the no button does:
-            alertDialogBuilder.setNegativeButton("No", (click, arg) -> {
+            alertDialogBuilder.setNegativeButton(R.string.soccerNo, (click, arg) -> {
 
             });
 
@@ -356,12 +379,24 @@ public class SoccerActivity extends AppCompatActivity {
     }
 
     protected void printCursor(Cursor c, int version) {
-
+        Log.v("Match Object", String.valueOf(db.getVersion()));
+        Log.v("Match number of cols", String.valueOf(c.getColumnCount()));
+        Log.v("Match col names", Arrays.toString(c.getColumnNames()));
+        Log.v("Match number of rows", String.valueOf(c.getCount()));
+        Log.v("Match Object", DatabaseUtils.dumpCursorToString(c));
     }
 
-    private void saveSharedPrefs(String stringToSave) {
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("SavedValue", stringToSave);
-        editor.commit();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.soccer_menu, menu);
+        return true;
     }
+
+//    private void saveSharedPrefs(String stringToSave) {
+//        SharedPreferences.Editor editor = prefs.edit();
+//        editor.putString("Value", stringToSave);
+//        editor.commit();
+//    }
+
 }
