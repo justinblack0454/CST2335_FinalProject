@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -86,7 +87,6 @@ public class SoccerActivity extends AppCompatActivity {
 
         Toolbar soccerMyToolbar = (Toolbar) findViewById(R.id.soccerToolBar);
         setSupportActionBar(soccerMyToolbar);
-
 
 
         //Takes user to favourites page, accesses the database
@@ -387,9 +387,29 @@ public class SoccerActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.soccer_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.soccerGeoLink:
+                //placeholder for geoActivity. Change second parameter in intent
+                Intent goToGeoActivity = new Intent(SoccerActivity.this, SoccerActivity.class);
+                startActivity(goToGeoActivity);
+                break;
+            case R.id.soccerDeezerLink:
+                Intent goToDeezerActivity = new Intent(SoccerActivity.this, DeezerActivity.class);
+                startActivity(goToDeezerActivity);
+                break;
+            case R.id.soccerLyricsLink:
+                Intent goToSongLyricsActivity = new Intent(SoccerActivity.this, SongLyricsActivity.class);
+                startActivity(goToSongLyricsActivity);
+                break;
+        }
         return true;
     }
 
