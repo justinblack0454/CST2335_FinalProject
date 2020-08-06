@@ -83,7 +83,7 @@ public class DetailsFragment extends Fragment {
             intent.toString();
             startActivity(intent);
 
-                });
+        });
         hide= (Button)result.findViewById(R.id.hide);
         hide.setOnClickListener( clk -> {
             Toast.makeText(parentActivity.getApplicationContext(),
@@ -108,4 +108,3 @@ public class DetailsFragment extends Fragment {
         parentActivity = (AppCompatActivity)context;
     }
 }
-

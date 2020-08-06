@@ -2,7 +2,9 @@ package com.example.cst2335_finalproject;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -64,6 +66,12 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
     Toolbar tBar;
     Button help;
     Button lyrics;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    public static final String ARTIST = "artist";
+    public static final String TITLE = "title";
+
+
+    SharedPreferences sharedpreferences;
     public static final String ITEM_TITLE = "TITLE";
     public static final String  ITEM_ARTIST= "ARTIST";
     public static final String ITEM_POSITION = "POSITION";
@@ -109,52 +117,52 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
  * @author Aahuti Patel-040974663
  * @version 1.0
  */
-         class SongLyricsList extends BaseAdapter {
+        class SongLyricsList extends BaseAdapter {
 
-             /**
-              *
-              * @return int
-              */
+            /**
+             *
+             * @return int
+             */
             @Override
             public int getCount() {
                 return songLyricsList.size();
             }
 
-             /**
-              *
-              * @param position
-              * @return SongLyrics
-              */
+            /**
+             *
+             * @param position
+             * @return SongLyrics
+             */
             @Override
             public SongLyrics getItem(int position) {
                 return songLyricsList.get(position);
             }
 
-             /**
-              *
-              * @param position
-              * @return long
-              */
+            /**
+             *
+             * @param position
+             * @return long
+             */
             @Override
             public long getItemId(int position) {
                 return getItem(position).getId();
 
             }
 
-             /**
-              *
-              * @param position
-              * @param convertView
-              * @param parent
-              * @return View
-              */
+            /**
+             *
+             * @param position
+             * @param convertView
+             * @param parent
+             * @return View
+             */
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 SongLyrics songLyricsObj = (SongLyrics) getItem(position);
                 LayoutInflater inflater = getLayoutInflater();
                 View view = null;
-               // if(songLyricsObj.search)
-                    view = inflater.inflate(R.layout.music, parent, false);
+                // if(songLyricsObj.search)
+                view = inflater.inflate(R.layout.music, parent, false);
 
                 titlename = (TextView) view.findViewById(R.id.msgr);
                 titlename.setText(songLyricsObj.title+" by "+songLyricsObj.artistName );
@@ -222,15 +230,26 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
         });
 
 
-
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         lyrics.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SongLyricsQuery songlyricsQuery = new SongLyricsQuery();
-                    songlyricsQuery.execute("https://api.lyrics.ovh/v1/" + searchartist.getText() + "/" + searchtitle.getText());
-                }
+            @Override
+            public void onClick(View v) {
+                String n  = searchartist.getText().toString();
+                String ph  = searchtitle.getText().toString();
 
-            });
+
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+
+                editor.putString(ARTIST, n);
+                editor.putString(TITLE, ph);
+
+                editor.commit();
+                SongLyricsQuery songlyricsQuery = new SongLyricsQuery();
+                songlyricsQuery.execute("https://api.lyrics.ovh/v1/" + searchartist.getText() + "/" + searchtitle.getText());
+
+            }
+
+        });
 
 
 
@@ -243,7 +262,7 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
             SongLyrics song = songLyricsList.get(position);
             alertDialogBuilder.setTitle("You want to delete this item").setMessage("Row is: " + position + " and database id is: " + id)
                     .setPositiveButton("Yes", (click, arg) -> {
-                          deleteMessage(selectedMessage);
+                        deleteMessage(selectedMessage);
                         songLyricsList.remove(position);
                         myAdapter.notifyDataSetChanged();
                     })
@@ -308,7 +327,7 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
                         .setNegativeButton("Close", (click, arg) -> {
                         })
                         .create().show();
-                    return true;
+                return true;
 
             case R.id.donate:
                 AlertDialog.Builder alertDialogBuilderr = new AlertDialog.Builder(this);
@@ -317,14 +336,14 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
                 final EditText input = new EditText(this);
                 input.setHint("$$$");
                 alertDialogBuilderr.setView(input);
-                        alertDialogBuilderr.setPositiveButton("Thank you" ,(click, arg) -> {
+                alertDialogBuilderr.setPositiveButton("Thank you" ,(click, arg) -> {
 
-            })
+                })
                         .setNegativeButton("Cancel", (click, arg) -> {
                         })
                         .create().show();
                 return true;
-                    }
+        }
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -418,8 +437,8 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
      * @author Aahuti Patel-040974663
      * @version 1.0
      */
-        private class SongLyricsQuery extends AsyncTask<String, Integer, String>{
-            String parameter = null;
+    private class SongLyricsQuery extends AsyncTask<String, Integer, String>{
+        String parameter = null;
 
         /**
          *
@@ -458,7 +477,7 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
                             publishProgress(100);
 
                         }
-            }
+                    }
                     eventType = xpp.next();
                 }
 
@@ -467,9 +486,9 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
 
             }
             catch(Exception e){
-            e.getMessage();
+                e.getMessage();
             }
-        return parameter;
+            return parameter;
         }
 
         /**
@@ -505,14 +524,14 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
      * @author Aahuti Patel-040974663
      * @version 1.0
      */
-        private class SongLyrics {
-            String title;
-            int duration; //check the format of this
-            String artistName;
-            long id;
-            int ranking;
-            int explicit;
-            boolean search;
+    private class SongLyrics {
+        String title;
+        int duration; //check the format of this
+        String artistName;
+        long id;
+        int ranking;
+        int explicit;
+        boolean search;
 
         /**
          *
@@ -520,11 +539,11 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
          * @param title
          * @param artistName
          */
-            private SongLyrics(boolean search,String title, String artistName) {
-                this.search=search;
-                this.title = title;
-                this.artistName=artistName;
-            }
+        private SongLyrics(boolean search,String title, String artistName) {
+            this.search=search;
+            this.title = title;
+            this.artistName=artistName;
+        }
 
         /**
          *
@@ -532,88 +551,86 @@ public class SongLyricsActivity extends AppCompatActivity implements NavigationV
          * @param title
          * @param artistName
          */
-            private SongLyrics(int id,String title, String artistName) {
-                this.id=id;
-                this.title = title;
-                this.artistName=artistName;
-            }
+        private SongLyrics(int id,String title, String artistName) {
+            this.id=id;
+            this.title = title;
+            this.artistName=artistName;
+        }
 
 
         /**
          *
          * @param title
          */
-            private void setSongTitle(String title) {
-                this.title = title;
-            }
+        private void setSongTitle(String title) {
+            this.title = title;
+        }
 
         /**
          *
          * @return
          */
-            private String getSongTitle() {
-                return title;
-            }
+        private String getSongTitle() {
+            return title;
+        }
 
         /**
          *
          * @param duration
          */
-            private void setDuration(int duration) {
-                this.duration = duration;
-            }
+        private void setDuration(int duration) {
+            this.duration = duration;
+        }
 
         /**
          *
          * @return int
          */
-            private int getDuration() {
-                return duration;
-            }
+        private int getDuration() {
+            return duration;
+        }
 
         /**
          *
          * @param artistName
          */
-            private void setArtistName(String artistName) {
-                this.artistName = artistName;
-            }
+        private void setArtistName(String artistName) {
+            this.artistName = artistName;
+        }
 
         /**
          *
          * @return String
          */
-            private String getArtistName() {
-                return artistName;
-            }
+        private String getArtistName() {
+            return artistName;
+        }
 
         /**
          *
          * @param id
          */
-            public void setId(long id) {
-                this.id = id;
-            }
+        public void setId(long id) {
+            this.id = id;
+        }
 
         /**
          *
          * @return long
          */
-            public long getId() {
-                return id;
-            }
+        public long getId() {
+            return id;
+        }
 
         /**
          *
          * @return int
          */
-            public int getRanking(){
-                return ranking;
-            }
+        public int getRanking(){
+            return ranking;
         }
+    }
 
 
 
 }
-
-
